@@ -81,7 +81,7 @@ namespace CryptL
             }
 
             if (key == null || key.Length != publicKeyStandardLength)
-                throw new Exception($"Array {nameof(key)} must be {keyStandardLength} bytes");
+                throw new Exception($"{nameof(key)} size must be {keyStandardLength}");
         }
     }
 

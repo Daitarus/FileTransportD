@@ -34,11 +34,12 @@ namespace ProtocolCryptographyD
                 byteCounter += socket.Receive(buffer);
                 payLoad.AddRange(buffer);
             }
-
-            buffer = new byte[lengthPayLoad - byteCounter];
-            socket.Receive(buffer);
-            payLoad.AddRange(buffer);
-
+            if (lengthPayLoad - byteCounter > 0)
+            {
+                buffer = new byte[lengthPayLoad - byteCounter];
+                socket.Receive(buffer);
+                payLoad.AddRange(buffer);
+            }
 
             return payLoad.ToArray();
         }

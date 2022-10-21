@@ -1,6 +1,7 @@
 ﻿using CryptL;
 using System.Net;
 using System.Net.Sockets;
+using System.Text;
 
 namespace ProtocolCryptographyD
 {
@@ -40,6 +41,11 @@ namespace ProtocolCryptographyD
 
         private void ClientWork(Socket socket)
         {
+            //create session id
+            DateTime dateConnection = DateTime.Now;
+            IPEndPoint clientEndPoint = (IPEndPoint)socket.RemoteEndPoint;
+            byte[] sessionId = CreateSessionId(clientEndPoint, dateConnection);
+
             try
             {
                 Transport transport = new Transport(socket);
@@ -54,7 +60,11 @@ namespace ProtocolCryptographyD
                 {
                     CryptAES aes = new CryptAES(aesCom.unionKeyIV);
 
-                    //cycle
+                    //send hash(SessionId)
+                    SessionIdCom sessionIdCom = new SessionIdCom(HashSHA256.GetHash(sessionId));
+                    transport.SendData(aes.Encrypt(sessionIdCom.ConvertToBytes()));
+
+                    //client cycle
                 }
             }
             catch (Exception e)
@@ -71,6 +81,16 @@ namespace ProtocolCryptographyD
                 socket.Close();
             }
             catch { }
+        }
+
+        private byte[] CreateSessionId(IPEndPoint clientEndPoint, DateTime dateConnection)
+        {
+            StringBuilder sessionIp = new StringBuilder();
+            sessionIp.Append(clientEndPoint.ToString());
+            sessionIp.Append(':');
+            sessionIp.Append(dateConnection.Ticks);
+
+            return Encoding.UTF8.GetBytes(sessionIp.ToString());
         }
     }
 }

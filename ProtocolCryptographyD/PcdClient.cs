@@ -9,6 +9,7 @@ namespace ProtocolCryptographyD
         private IPEndPoint serverEndPoint;
         private Socket socket;
         private CryptAES aes;
+        private byte[] hashSessionId;
 
         public PcdClient(IPEndPoint serverEndPoint)
         {
@@ -34,6 +35,15 @@ namespace ProtocolCryptographyD
                     //send aes key
                     AesKeyCom aesKeyCom = new AesKeyCom(aes.UnionKeyIV());
                     transport.SendData(rsa.Encrypt(aesKeyCom.ConvertToBytes()));
+
+                    //get sessionId
+                    SessionIdCom sessionIdCom;
+                    if(SessionIdCom.ParseToCom(aes.Decrypt(transport.GetData()), out sessionIdCom))
+                    {
+                        hashSessionId = sessionIdCom.sessionId;
+
+
+                    }
                 }
             }
             catch(Exception e)
