@@ -7,13 +7,16 @@ namespace ProtocolCryptographyD
 {
     public class PcdServer
     {
+
         private IPEndPoint serverEndPoint;
         private CryptRSA rsa;
+        private IParser parser;
 
-        public PcdServer(IPEndPoint serverEndPoint)
+        public PcdServer(IPEndPoint serverEndPoint, IParser parser)
         {
             this.serverEndPoint = serverEndPoint;
             rsa = new CryptRSA();
+            this.parser = parser;
         }
 
         public void Start()
@@ -27,8 +30,8 @@ namespace ProtocolCryptographyD
                     listenSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
                     listenSocket.Bind(serverEndPoint);
                     listenSocket.Listen(1);
-                    Socket clientSocket = listenSocket.Accept();
-                    Task clientWork = new Task(() => ClientWork(clientSocket));
+                    Socket client = listenSocket.Accept();
+                    Task clientWork = new Task(() => ClientWork(client));
                     clientWork.Start();
                     listenSocket.Close();
                 }
@@ -65,6 +68,11 @@ namespace ProtocolCryptographyD
                     transport.SendData(aes.Encrypt(sessionIdCom.ConvertToBytes()));
 
                     //client cycle
+                    while(true)
+                    {
+                        ICommand com = parser.Parse(aes.Decrypt(transport.GetData()));
+                        com.ExecuteAction(transport, aes);
+                    }
                 }
             }
             catch (Exception e)

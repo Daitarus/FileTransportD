@@ -10,21 +10,24 @@ namespace ProtocolCryptographyD
         private Socket socket;
         private CryptAES aes;
         private byte[] hashSessionId;
+        private Transport transport;
+        private IParser parser;
 
-        public PcdClient(IPEndPoint serverEndPoint)
+        public PcdClient(IPEndPoint serverEndPoint, IParser parser)
         {
             this.serverEndPoint = serverEndPoint;
 
             socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
             aes = new CryptAES();
+            this.parser = parser;
         }
 
-        public void Connect(byte[] bytes)
+        public bool Connect()
         {
             try
             {
                 socket.Connect(serverEndPoint);
-                Transport transport = new Transport(socket);
+                transport = new Transport(socket);
 
                 //get PublicKey RSA
                 RsaPkeyCom rsaCom;
@@ -42,14 +45,24 @@ namespace ProtocolCryptographyD
                     {
                         hashSessionId = sessionIdCom.sessionId;
 
-
+                        return true;
                     }
                 }
+
+                return false;
             }
             catch(Exception e)
             {
                 Disconnect();
+                return false;
             }
+        }
+
+        public void ExecuteCommand(ICommand com)
+        {
+            transport.SendData(aes.Encrypt(com.ToBytes()));
+            com = parser.Parse(aes.Decrypt(transport.GetData()));
+            com.ExecuteAction(transport, aes);
         }
 
         public void Disconnect()
