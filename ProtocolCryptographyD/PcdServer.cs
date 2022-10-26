@@ -18,6 +18,12 @@ namespace ProtocolCryptographyD
             rsa = new CryptRSA();
             this.parser = parser;
         }
+        public PcdServer(IPEndPoint serverEndPoint, CryptRSA rsa, IParser parser)
+        {
+            this.serverEndPoint = serverEndPoint;
+            this.rsa = rsa;
+            this.parser = parser;
+        }
 
         public void Start()
         {
@@ -44,10 +50,8 @@ namespace ProtocolCryptographyD
 
         private void ClientWork(Socket socket)
         {
-            //create session id
-            DateTime dateConnection = DateTime.Now;
-            IPEndPoint clientEndPoint = (IPEndPoint)socket.RemoteEndPoint;
-            byte[] sessionId = CreateSessionId(clientEndPoint, dateConnection);
+            //create client info
+            ClientInfo clientInfo = CreateClientInfo((IPEndPoint)socket.RemoteEndPoint, DateTime.Now);
 
             try
             {
@@ -61,19 +65,21 @@ namespace ProtocolCryptographyD
                 AesKeyCom aesCom;
                 if (AesKeyCom.ParseToCom(rsa.Decrypt(transport.GetData()), out aesCom))
                 {
-                    CryptAES aes = new CryptAES(aesCom.unionKeyIV);
+                    clientInfo.aes = new CryptAES(aesCom.unionKeyIV);
 
                     //send hash(SessionId)
-                    SessionIdCom sessionIdCom = new SessionIdCom(HashSHA256.GetHash(sessionId));
-                    transport.SendData(aes.Encrypt(sessionIdCom.ConvertToBytes()));
+                    SessionIdCom sessionIdCom = new SessionIdCom(clientInfo.hashSessionId);
+                    transport.SendData(clientInfo.aes.Encrypt(sessionIdCom.ConvertToBytes()));
 
                     //client cycle
                     while(true)
                     {
-                        ICommand com = parser.Parse(aes.Decrypt(transport.GetData()));
-                        com.ExecuteAction(transport, aes);
+                        Command com = parser.Parse(clientInfo.aes.Decrypt(transport.GetData()));
+                        com.ExecuteCommand(transport, ref clientInfo);
                     }
                 }
+
+                Disconnect(socket);
             }
             catch (Exception e)
             {
@@ -91,14 +97,21 @@ namespace ProtocolCryptographyD
             catch { }
         }
 
-        private byte[] CreateSessionId(IPEndPoint clientEndPoint, DateTime dateConnection)
+        private ClientInfo CreateClientInfo(IPEndPoint clientEndPoint, DateTime dateConnection)
         {
-            StringBuilder sessionIp = new StringBuilder();
-            sessionIp.Append(clientEndPoint.ToString());
-            sessionIp.Append(':');
-            sessionIp.Append(dateConnection.Ticks);
+            StringBuilder sessionIpStr = new StringBuilder();
+            sessionIpStr.Append(clientEndPoint.ToString());
+            sessionIpStr.Append(':');
+            sessionIpStr.Append(dateConnection.Ticks);
+            byte[] sessionId = Encoding.UTF8.GetBytes(sessionIpStr.ToString());
 
-            return Encoding.UTF8.GetBytes(sessionIp.ToString());
+            ClientInfo clientInfo = new ClientInfo();
+            clientInfo.endPoint = clientEndPoint;
+            clientInfo.timeConnection = dateConnection;
+            clientInfo.sessionId = sessionId;
+            clientInfo.hashSessionId = HashSHA256.GetHash(sessionId);
+
+            return clientInfo;
         }
     }
 }

@@ -4,7 +4,7 @@ namespace ProtocolCryptographyD
 {
     public class Transport
     {
-        private int maxLengthPack = ICommand.MaxLengthData + 1;
+        private int maxLengthPack = Command.MaxLengthData + 1;
         private const int lengthArrayLengthPayload = 3;
 
         private Socket socket;

@@ -1,7 +1,9 @@
-﻿namespace ProtocolCryptographyD
+﻿using ProtocolCryptographyD;
+
+namespace ProtocolCryptographyD
 {
     public interface IParser
     {
-        public ICommand Parse(byte[] buffer);
+        public Command Parse(byte[] buffer);
     }
 }

@@ -10,6 +10,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\CommandsKit\CommandsKit.csproj" />
     <ProjectReference Include="..\..\ProtocolCryptographyD\ProtocolCryptographyD.csproj" />
+    <ProjectReference Include="..\ServerRepository\ServerRepository.csproj" />
   </ItemGroup>
 
 </Project>

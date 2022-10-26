@@ -7,9 +7,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\CryptL\CryptL.csproj" />
-    <ProjectReference Include="..\ProtocolCryptographyD\ProtocolCryptographyD.csproj" />
-    <ProjectReference Include="..\Server\ServerRepository\ServerRepository.csproj" />
+    <ProjectReference Include="..\..\..\..\DataBase\RepositoryDB\RepositoryDB.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="6.0.7" />
   </ItemGroup>
 
 </Project>

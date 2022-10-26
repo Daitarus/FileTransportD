@@ -4,17 +4,17 @@ namespace CommandsKit
 {
     public class ComParser : IParser
     {
-        public ICommand Parse(byte[] buffer)
+        public Command Parse(byte[] buffer)
         {
             if (buffer == null || buffer.Length == 0)
                 throw new ArgumentNullException(nameof(buffer));
 
-            TypeCom typeData;
+            TypeCommand typeData;
             byte[] payLoad = new byte[buffer.Length - 1];
 
             try
             {
-                typeData = (TypeCom)buffer[0];
+                typeData = (TypeCommand)buffer[0];
             }
             catch
             {
@@ -24,13 +24,13 @@ namespace CommandsKit
 
             switch (typeData)
             {
-                case TypeCom.AUTHORIZATION_R:
+                case TypeCommand.AUTHORIZATION_R:
                     {
-                        return AuthorizationComR.BytesToCom(payLoad);
+                        return AuthenticationComR.BytesToCom(payLoad);
                     }
-                case TypeCom.AUTHORIZATION_A:
+                case TypeCommand.AUTHORIZATION_A:
                     {
-                        return AuthorizationComA.BytesToCom(payLoad);
+                        return AuthenticationComA.BytesToCom(payLoad);
                     }
                 default:
                     {

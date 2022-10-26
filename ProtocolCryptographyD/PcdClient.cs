@@ -8,17 +8,16 @@ namespace ProtocolCryptographyD
     {
         private IPEndPoint serverEndPoint;
         private Socket socket;
-        private CryptAES aes;
-        private byte[] hashSessionId;
         private Transport transport;
         private IParser parser;
+
+        public ClientInfo clientInfo = new ClientInfo();
 
         public PcdClient(IPEndPoint serverEndPoint, IParser parser)
         {
             this.serverEndPoint = serverEndPoint;
 
-            socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-            aes = new CryptAES();
+            socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);            
             this.parser = parser;
         }
 
@@ -27,6 +26,11 @@ namespace ProtocolCryptographyD
             try
             {
                 socket.Connect(serverEndPoint);
+
+                clientInfo.timeConnection = DateTime.Now;
+                clientInfo.endPoint = (IPEndPoint)socket.LocalEndPoint;
+                clientInfo.aes = new CryptAES();
+
                 transport = new Transport(socket);
 
                 //get PublicKey RSA
@@ -36,14 +40,14 @@ namespace ProtocolCryptographyD
                     CryptRSA rsa = new CryptRSA(rsaCom.publicKey, false);
 
                     //send aes key
-                    AesKeyCom aesKeyCom = new AesKeyCom(aes.UnionKeyIV());
+                    AesKeyCom aesKeyCom = new AesKeyCom(clientInfo.aes.UnionKeyIV());
                     transport.SendData(rsa.Encrypt(aesKeyCom.ConvertToBytes()));
 
                     //get sessionId
                     SessionIdCom sessionIdCom;
-                    if(SessionIdCom.ParseToCom(aes.Decrypt(transport.GetData()), out sessionIdCom))
+                    if(SessionIdCom.ParseToCom(clientInfo.aes.Decrypt(transport.GetData()), out sessionIdCom))
                     {
-                        hashSessionId = sessionIdCom.sessionId;
+                        clientInfo.hashSessionId = sessionIdCom.sessionId;
 
                         return true;
                     }
@@ -58,11 +62,18 @@ namespace ProtocolCryptographyD
             }
         }
 
-        public void ExecuteCommand(ICommand com)
+        public void ExecuteAction(Command com)
         {
-            transport.SendData(aes.Encrypt(com.ToBytes()));
-            com = parser.Parse(aes.Decrypt(transport.GetData()));
-            com.ExecuteAction(transport, aes);
+            try
+            {
+                transport.SendData(clientInfo.aes.Encrypt(com.ToBytes()));
+                com = parser.Parse(clientInfo.aes.Decrypt(transport.GetData()));
+                com.ExecuteCommand(transport, ref clientInfo);
+            }
+            catch (Exception e)
+            {
+                Disconnect();
+            }
         }
 
         public void Disconnect()
@@ -72,7 +83,10 @@ namespace ProtocolCryptographyD
                 socket.Shutdown(SocketShutdown.Both);
                 socket.Close();
             }
-            catch { }
+            catch (Exception e)
+            {
+                
+            }
         }
     }
 }
