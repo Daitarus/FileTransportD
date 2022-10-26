@@ -9,7 +9,6 @@ namespace ProtocolCryptographyD
         public DateTime timeConnection;
         public CryptAES aes;
         public byte[] sessionId;
-        public byte[] hashSessionId;
         public bool authentication;
     }
 }

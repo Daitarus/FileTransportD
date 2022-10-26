@@ -7,7 +7,7 @@ namespace CommandsKit
     public class AuthenticationComR : Command
     {
 
-        public readonly byte[] hashAuthorization;
+        public readonly byte[] hashAuthentication;
 
         public AuthenticationComR(byte[] hashAuthorization, byte[] sessionId)
         {
@@ -24,37 +24,30 @@ namespace CommandsKit
             typeCom = (byte)TypeCommand.AUTHORIZATION_R;
             payload = hashAuthorization;
 
-            this.hashAuthorization = hashAuthorization;
+            this.hashAuthentication = hashAuthorization;
             this.sessionId = sessionId;
         }
 
         public override byte[] ToBytes()
         {
 
-            byte[] bytes = new byte[1 + hashAuthorization.Length + sessionId.Length];
+            byte[] bytes = new byte[1 + hashAuthentication.Length + sessionId.Length];
 
             bytes[0] = typeCom;
 
-            Array.Copy(hashAuthorization, 0, bytes, 1, hashAuthorization.Length);
-            Array.Copy(sessionId, 0, bytes, 1 + hashAuthorization.Length, sessionId.Length);
+            Array.Copy(hashAuthentication, 0, bytes, 1, hashAuthentication.Length);
+            Array.Copy(sessionId, 0, bytes, 1 + hashAuthentication.Length, sessionId.Length);
 
             return bytes;
         }
 
         public override void ExecuteCommand(Transport transport, ref ClientInfo clientInfo)
         {
-            if (Enumerable.SequenceEqual(clientInfo.hashSessionId, sessionId))
+            if (Enumerable.SequenceEqual(clientInfo.sessionId, sessionId))
             {
                 if (!clientInfo.authentication)
                 {
-                    byte[] hash = HashSHA256.GetHash(Encoding.UTF8.GetBytes("123"));
-
-                    bool answer = Enumerable.SequenceEqual(hashAuthorization, hash);
-
-                    AuthenticationComA com = new AuthenticationComA(answer, sessionId);
-                    clientInfo.authentication = answer;
-
-                    transport.SendData(clientInfo.aes.Encrypt(com.ToBytes()));
+                    ExecuteRequest.Authentication(transport, ref clientInfo, sessionId, hashAuthentication);
                 }
             }
         }

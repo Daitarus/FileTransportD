@@ -10,32 +10,55 @@ namespace Client
     {
         static void Main(string[] args)
         {
-            IPEndPoint serverEndPoint = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 5000);
+            //IPEndPoint serverEndPoint = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 5000);
+            IPEndPoint serverEndPoint = EnterData.EnterIpEndPoint();
+
             PcdClient pcdClient = new PcdClient(serverEndPoint, new ComParser());
 
             if(pcdClient.Connect())
             {
-                Console.WriteLine("Connect...");
-
-                Command com = new AuthenticationComR(HashSHA256.GetHash(Encoding.UTF8.GetBytes("123")), pcdClient.clientInfo.hashSessionId);
-                pcdClient.ExecuteAction(com);
-
-                if(pcdClient.clientInfo.authentication)
-                {
-                    Console.WriteLine("Authentication...");
-
-
-                }
-                else
-                {
-                    Console.WriteLine("Not authentication!");
-                }
+                PrintMessage.PrintColorMessage("Connection!\n\n", ConsoleColor.Cyan);
+                AuthorizationAlg(pcdClient);
             }
             else
             {
-                Console.WriteLine("No connect!");
+                PrintMessage.PrintColorMessage("Error: No connection!\n\n", ConsoleColor.Red);
             }
-            pcdClient.Disconnect();
+        }
+
+        private static void AuthorizationAlg(PcdClient pcdClient)
+        {
+            int comEnter = EnterData.EnterNumAction(new string[] { "Authentication", "Registration" });
+            Command comProtocol;
+            bool successfulAuthentication = false;
+            while (!successfulAuthentication)
+            {
+                string login, password;
+                EnterData.EnterAuthorization(out login, out password);
+                string authData = String.Format("{0}{1}", login, password);
+                byte[] authHash = HashSHA256.GetHash(authData);
+
+                switch (comEnter)
+                {
+                    case 1:
+                        {                            
+                            comProtocol = new AuthenticationComR(authHash, pcdClient.clientInfo.sessionId);
+                            pcdClient.ExecuteAction(comProtocol);
+                            successfulAuthentication = pcdClient.clientInfo.authentication;
+                            if(!successfulAuthentication)
+                            {
+                                PrintMessage.PrintColorMessage("\nAuthentication isn't successful!\n\n", ConsoleColor.Red);
+                            }
+                            break;
+                        }
+                    case 2:
+                        {
+                            break;
+                        }
+                }
+            }
+
+            PrintMessage.PrintColorMessage("\nAuthentication is successful!\n\n", ConsoleColor.Green);
         }
     }
 }

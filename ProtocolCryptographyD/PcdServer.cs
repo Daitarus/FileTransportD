@@ -68,7 +68,7 @@ namespace ProtocolCryptographyD
                     clientInfo.aes = new CryptAES(aesCom.unionKeyIV);
 
                     //send hash(SessionId)
-                    SessionIdCom sessionIdCom = new SessionIdCom(clientInfo.hashSessionId);
+                    SessionIdCom sessionIdCom = new SessionIdCom(clientInfo.sessionId);
                     transport.SendData(clientInfo.aes.Encrypt(sessionIdCom.ConvertToBytes()));
 
                     //client cycle
@@ -87,14 +87,18 @@ namespace ProtocolCryptographyD
             }
         }
 
-        private void Disconnect(Socket socket)
+        private bool Disconnect(Socket socket)
         {
             try
             {
                 socket.Shutdown(SocketShutdown.Both);
                 socket.Close();
+                return true;
             }
-            catch { }
+            catch (Exception e)
+            {
+                return false;
+            }
         }
 
         private ClientInfo CreateClientInfo(IPEndPoint clientEndPoint, DateTime dateConnection)
@@ -108,8 +112,7 @@ namespace ProtocolCryptographyD
             ClientInfo clientInfo = new ClientInfo();
             clientInfo.endPoint = clientEndPoint;
             clientInfo.timeConnection = dateConnection;
-            clientInfo.sessionId = sessionId;
-            clientInfo.hashSessionId = HashSHA256.GetHash(sessionId);
+            clientInfo.sessionId = HashSHA256.GetHash(sessionId);
 
             return clientInfo;
         }

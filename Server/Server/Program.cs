@@ -10,11 +10,28 @@ namespace Server
     {
         static void Main(string[] args)
         {
-            ServerDB.ConnectionString = ConfigurationManager.AppSettings["connectionString"];
+            bool flagStartServer = false;
+            string connectionString = ConfigurationManager.AppSettings["connectionString"];
+            if(connectionString != null)
+            {
+                ServerDB.ConnectionString = connectionString;
+                if(ServerDB.CheckDB())
+                {
+                    flagStartServer = true;
+                }
+            }
+            if (flagStartServer)
+            {
+                IPEndPoint serverEndPoint = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 5000);
+                PcdServer server = new PcdServer(serverEndPoint, new ComParser());
 
-            IPEndPoint serverEndPoint = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 5000);
-            PcdServer server = new PcdServer(serverEndPoint, new ComParser());
-            server.Start();
+                Console.WriteLine("Server running!");
+                server.Start();
+            }
+            else
+            {
+                Console.WriteLine("Error: Server not running!");
+            }
         }
     }
 }

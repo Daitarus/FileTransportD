@@ -1,5 +1,5 @@
 ﻿using System.Security.Cryptography;
-
+using System.Text;
 
 namespace CryptL
 {
@@ -15,6 +15,11 @@ namespace CryptL
             {
                 return sha256.ComputeHash(originalData);
             }
+        }
+        public static byte[] GetHash(string originaData)
+        {
+            byte[] origonalDataBytes = Encoding.UTF8.GetBytes(originaData);
+            return GetHash(origonalDataBytes);
         }
     }
 }

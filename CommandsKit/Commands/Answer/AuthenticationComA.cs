@@ -43,7 +43,7 @@ namespace CommandsKit
 
         public override void ExecuteCommand(Transport transport, ref ClientInfo clientInfo)
         {
-            clientInfo.authentication = answer;
+            ExecuteAnswer.Authentication(transport, ref clientInfo, answer);
         }
 
         public static AuthenticationComA BytesToCom(byte[] payload)

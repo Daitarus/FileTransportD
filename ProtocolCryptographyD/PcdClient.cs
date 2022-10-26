@@ -47,7 +47,7 @@ namespace ProtocolCryptographyD
                     SessionIdCom sessionIdCom;
                     if(SessionIdCom.ParseToCom(clientInfo.aes.Decrypt(transport.GetData()), out sessionIdCom))
                     {
-                        clientInfo.hashSessionId = sessionIdCom.sessionId;
+                        clientInfo.sessionId = sessionIdCom.sessionId;
 
                         return true;
                     }
@@ -62,30 +62,33 @@ namespace ProtocolCryptographyD
             }
         }
 
-        public void ExecuteAction(Command com)
+        public bool ExecuteAction(Command com)
         {
             try
             {
                 transport.SendData(clientInfo.aes.Encrypt(com.ToBytes()));
                 com = parser.Parse(clientInfo.aes.Decrypt(transport.GetData()));
                 com.ExecuteCommand(transport, ref clientInfo);
+                return true;
             }
             catch (Exception e)
             {
                 Disconnect();
+                return false;
             }
         }
 
-        public void Disconnect()
+        public bool Disconnect()
         {
             try
             {
                 socket.Shutdown(SocketShutdown.Both);
                 socket.Close();
+                return true;
             }
             catch (Exception e)
             {
-                
+                return false;
             }
         }
     }

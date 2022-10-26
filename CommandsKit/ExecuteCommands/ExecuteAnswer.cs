@@ -1,13 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using ProtocolCryptographyD;
 
 namespace CommandsKit
 {
     internal static class ExecuteAnswer
     {
-
+        public static void Authentication(Transport transport, ref ClientInfo clientInfo, bool answer)
+        {
+            clientInfo.authentication = answer;
+        }
     }
 }
