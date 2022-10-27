@@ -1,6 +1,4 @@
-﻿using CryptL;
-using ProtocolCryptographyD;
-using System.Text;
+﻿using ProtocolCryptographyD;
 
 namespace CommandsKit
 {
@@ -9,47 +7,48 @@ namespace CommandsKit
 
         public readonly byte[] hashAuthentication;
 
-        public AuthenticationComR(byte[] hashAuthorization, byte[] sessionId)
+        public AuthenticationComR(byte[] hashAuthentication, byte[] sessionId)
         {
-            if (hashAuthorization == null)
-                throw new ArgumentNullException(nameof(hashAuthorization));
+            if (hashAuthentication == null)
+                throw new ArgumentNullException(nameof(hashAuthentication));
             if (sessionId == null)
                 throw new ArgumentNullException(nameof(sessionId));
-            if (hashAuthorization.Length != LengthHash)
-                throw new ArgumentOutOfRangeException($"{nameof(hashAuthorization)} size must be {LengthHash}");
+            if (hashAuthentication.Length != LengthHash)
+                throw new ArgumentOutOfRangeException($"{nameof(hashAuthentication)} size must be {LengthHash}");
             if (sessionId.Length != LengthHash)
                 throw new ArgumentOutOfRangeException($"{nameof(sessionId)} size must be {LengthHash}");
 
 
             typeCom = (byte)TypeCommand.AUTHORIZATION_R;
-            payload = hashAuthorization;
-
-            this.hashAuthentication = hashAuthorization;
+            this.hashAuthentication = hashAuthentication;
             this.sessionId = sessionId;
+
+            payload = new byte[hashAuthentication.Length + sessionId.Length];
+            Array.Copy(hashAuthentication, 0, payload, 0, hashAuthentication.Length);
+            Array.Copy(sessionId, 0, payload, hashAuthentication.Length, sessionId.Length);
         }
 
         public override byte[] ToBytes()
         {
-
-            byte[] bytes = new byte[1 + hashAuthentication.Length + sessionId.Length];
+            byte[] bytes = new byte[1 + payload.Length];
 
             bytes[0] = typeCom;
-
-            Array.Copy(hashAuthentication, 0, bytes, 1, hashAuthentication.Length);
-            Array.Copy(sessionId, 0, bytes, 1 + hashAuthentication.Length, sessionId.Length);
+            Array.Copy(payload, 0, bytes, 1, payload.Length);
 
             return bytes;
         }
 
-        public override void ExecuteCommand(Transport transport, ref ClientInfo clientInfo)
+        public override bool ExecuteCommand(Transport transport, ref ClientInfo clientInfo)
         {
             if (Enumerable.SequenceEqual(clientInfo.sessionId, sessionId))
             {
                 if (!clientInfo.authentication)
                 {
-                    ExecuteRequest.Authentication(transport, ref clientInfo, sessionId, hashAuthentication);
+                    return ExecuteRequest.Authentication(transport, ref clientInfo, sessionId, hashAuthentication);
                 }
             }
+
+            return false;
         }
 
         public static AuthenticationComR BytesToCom(byte[] payload)

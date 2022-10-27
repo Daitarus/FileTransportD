@@ -68,8 +68,7 @@ namespace ProtocolCryptographyD
             {
                 transport.SendData(clientInfo.aes.Encrypt(com.ToBytes()));
                 com = parser.Parse(clientInfo.aes.Decrypt(transport.GetData()));
-                com.ExecuteCommand(transport, ref clientInfo);
-                return true;
+                return com.ExecuteCommand(transport, ref clientInfo);
             }
             catch (Exception e)
             {

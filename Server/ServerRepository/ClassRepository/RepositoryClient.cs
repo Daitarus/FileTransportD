@@ -18,5 +18,18 @@ namespace ServerRepository
                 return null;
             }
         }
+        public Client? SelectForName(string name)
+        {
+            ServerDB serverDB = (ServerDB)db;
+            IQueryable<Client> clients = serverDB.Clients.Where(client => client.Name.Equals(name));
+            if (clients.Count() > 0)
+            {
+                return clients.First();
+            }
+            else
+            {
+                return null;
+            }
+        }
     }
 }

@@ -10,8 +10,8 @@ namespace Client
     {
         static void Main(string[] args)
         {
-            //IPEndPoint serverEndPoint = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 5000);
-            IPEndPoint serverEndPoint = EnterData.EnterIpEndPoint();
+            IPEndPoint serverEndPoint = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 5000);
+            //IPEndPoint serverEndPoint = EnterData.EnterIpEndPoint();
 
             PcdClient pcdClient = new PcdClient(serverEndPoint, new ComParser());
 
@@ -27,13 +27,15 @@ namespace Client
         }
 
         private static void AuthorizationAlg(PcdClient pcdClient)
-        {
-            int comEnter = EnterData.EnterNumAction(new string[] { "Authentication", "Registration" });
+        {            
             Command comProtocol;
+            string login, password;
             bool successfulAuthentication = false;
+
             while (!successfulAuthentication)
             {
-                string login, password;
+                int comEnter = EnterData.EnterNumAction(new string[] { "Authentication", "Registration" });
+
                 EnterData.EnterAuthorization(out login, out password);
                 string authData = String.Format("{0}{1}", login, password);
                 byte[] authHash = HashSHA256.GetHash(authData);
@@ -43,8 +45,7 @@ namespace Client
                     case 1:
                         {                            
                             comProtocol = new AuthenticationComR(authHash, pcdClient.clientInfo.sessionId);
-                            pcdClient.ExecuteAction(comProtocol);
-                            successfulAuthentication = pcdClient.clientInfo.authentication;
+                            successfulAuthentication = pcdClient.ExecuteAction(comProtocol);
                             if(!successfulAuthentication)
                             {
                                 PrintMessage.PrintColorMessage("\nAuthentication isn't successful!\n\n", ConsoleColor.Red);
@@ -53,6 +54,15 @@ namespace Client
                         }
                     case 2:
                         {
+                            comProtocol = new RegistrationComR(login,authHash, pcdClient.clientInfo.sessionId);
+                            if(pcdClient.ExecuteAction(comProtocol))
+                            {
+                                PrintMessage.PrintColorMessage("\nRegistration is successful!\n\n", ConsoleColor.Green);
+                            }
+                            else
+                            {
+                                PrintMessage.PrintColorMessage("\nRegistration isn't successful!\n\n", ConsoleColor.Red);
+                            }
                             break;
                         }
                 }

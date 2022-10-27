@@ -25,6 +25,9 @@ namespace ProtocolCryptographyD
 
             return bytes;
         }
-        public virtual void ExecuteCommand(Transport transport, ref ClientInfo clientInfo) { }
+        public virtual bool ExecuteCommand(Transport transport, ref ClientInfo clientInfo)
+        {
+            return false;
+        }
     }
 }

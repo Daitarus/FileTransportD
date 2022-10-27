@@ -4,9 +4,15 @@ namespace CommandsKit
 {
     internal static class ExecuteAnswer
     {
-        public static void Authentication(Transport transport, ref ClientInfo clientInfo, bool answer)
+        public static bool Authentication(Transport transport, ref ClientInfo clientInfo, bool answer)
         {
             clientInfo.authentication = answer;
+            return answer;
+        }
+
+        public static bool Registration(Transport transport, ref ClientInfo clientInfo, bool answer)
+        {
+            return answer;
         }
     }
 }

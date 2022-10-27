@@ -21,7 +21,6 @@ namespace CommandsKit
 
             this.sessionId = sessionId;
         }
-
         public static UnknowCom BytesToCom(byte[] payload)
         {
             if (payload == null)

@@ -10,7 +10,7 @@ namespace CommandsKit
                 throw new ArgumentNullException(nameof(buffer));
 
             TypeCommand typeData;
-            byte[] payLoad = new byte[buffer.Length - 1];
+            byte[] payload = new byte[buffer.Length - 1];
 
             try
             {
@@ -20,21 +20,29 @@ namespace CommandsKit
             {
                 throw new ArgumentOutOfRangeException(nameof(typeData));
             }
-            Array.Copy(buffer, 1, payLoad, 0, buffer.Length - 1);
+            Array.Copy(buffer, 1, payload, 0, buffer.Length - 1);
 
             switch (typeData)
             {
                 case TypeCommand.AUTHORIZATION_R:
                     {
-                        return AuthenticationComR.BytesToCom(payLoad);
+                        return AuthenticationComR.BytesToCom(payload);
                     }
                 case TypeCommand.AUTHORIZATION_A:
                     {
-                        return AuthenticationComA.BytesToCom(payLoad);
+                        return AuthenticationComA.BytesToCom(payload);
+                    }
+                case TypeCommand.REGISTRATION_R:
+                    {
+                        return RegistrationComR.BytesToCom(payload);
+                    }
+                case TypeCommand.REGISTRATION_A:
+                    {
+                        return RegistrationComA.BytesToCom(payload);
                     }
                 default:
                     {
-                        return UnknowCom.BytesToCom(payLoad);
+                        return UnknowCom.BytesToCom(payload);
                     }
             }
         }

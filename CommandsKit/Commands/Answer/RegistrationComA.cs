@@ -2,24 +2,24 @@
 
 namespace CommandsKit
 {
-    public class AuthenticationComA : Command
+    public class RegistrationComA : Command
     {
         public readonly bool answer;
 
-        public AuthenticationComA(bool answer, byte[] sessionId)
+        public RegistrationComA(bool answer, byte[] sessionId)
         {
             if (sessionId == null)
                 throw new ArgumentNullException(nameof(sessionId));
             if (sessionId.Length != LengthHash)
                 throw new ArgumentOutOfRangeException($"{nameof(sessionId)} size must be {LengthHash}");
 
-            typeCom = (byte)TypeCommand.AUTHORIZATION_A;
+            typeCom = (byte)TypeCommand.REGISTRATION_A;
             this.sessionId = sessionId;
             this.answer = answer;
 
             payload = new byte[1 + sessionId.Length];
 
-            if(answer)
+            if (answer)
             {
                 payload[0] = 1;
             }
@@ -42,10 +42,10 @@ namespace CommandsKit
 
         public override bool ExecuteCommand(Transport transport, ref ClientInfo clientInfo)
         {
-            return ExecuteAnswer.Authentication(transport, ref clientInfo, answer);
+            return ExecuteAnswer.Registration(transport, ref clientInfo, answer);
         }
 
-        public static AuthenticationComA BytesToCom(byte[] payload)
+        public static RegistrationComA BytesToCom(byte[] payload)
         {
             if (payload == null)
                 throw new ArgumentNullException(nameof(payload));
@@ -56,12 +56,12 @@ namespace CommandsKit
             Array.Copy(payload, 1, sessionId, 0, sessionId.Length);
 
             bool answer = false;
-            if(payload[0]==1)
+            if (payload[0] == 1)
             {
                 answer = true;
             }
 
-            return new AuthenticationComA(answer, sessionId);
+            return new RegistrationComA(answer, sessionId);
         }
     }
 }
