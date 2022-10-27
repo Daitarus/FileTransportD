@@ -30,19 +30,9 @@ namespace CommandsKit
             Array.Copy(sessionId, 0, payload, 1, sessionId.Length);
         }
 
-        public override byte[] ToBytes()
-        {
-            byte[] bytes = new byte[1 + payload.Length];
-
-            bytes[0] = typeCom;
-            Array.Copy(payload, 0, bytes, 1, payload.Length);
-
-            return bytes;
-        }
-
         public override bool ExecuteCommand(Transport transport, ref ClientInfo clientInfo)
         {
-            return ExecuteAnswer.Authentication(transport, ref clientInfo, answer);
+            return answer;
         }
 
         public static AuthenticationComA BytesToCom(byte[] payload)

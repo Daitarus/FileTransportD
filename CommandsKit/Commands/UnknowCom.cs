@@ -5,6 +5,7 @@ namespace CommandsKit
 {
     public class UnknowCom : Command
     {
+        public readonly byte[] bytes = new byte[0];
         public UnknowCom(byte[]? bytes, byte[] sessionId)
         {
             if (sessionId == null)
@@ -13,13 +14,23 @@ namespace CommandsKit
                 throw new ArgumentOutOfRangeException($"{nameof(sessionId)} size must be {LengthHash}");
 
             typeCom = (byte)TypeCommand.UNKNOW;
+            if(bytes != null)
+            {
+                this.bytes = bytes;
+            }
+            this.sessionId = sessionId;
 
             if (bytes != null)
             {
-                payload = bytes;
+                payload = new byte[bytes.Length + sessionId.Length];
+                Array.Copy(bytes, 0, payload, 0, bytes.Length);
+                Array.Copy(sessionId, 0, payload, bytes.Length, sessionId.Length);
+            }
+            else
+            {
+                payload = sessionId;
             }
 
-            this.sessionId = sessionId;
         }
         public static UnknowCom BytesToCom(byte[] payload)
         {

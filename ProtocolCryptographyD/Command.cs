@@ -17,11 +17,10 @@ namespace ProtocolCryptographyD
 
         public virtual byte[] ToBytes() 
         {
-            byte[] bytes = new byte[1 + payload.Length + sessionId.Length];
+            byte[] bytes = new byte[1 + payload.Length];
 
             bytes[0] = typeCom;
             Array.Copy(payload, 0, bytes, 1, payload.Length);
-            Array.Copy(sessionId, 0, bytes, 1 + payload.Length, sessionId.Length);
 
             return bytes;
         }

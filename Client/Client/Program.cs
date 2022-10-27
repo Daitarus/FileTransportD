@@ -19,6 +19,7 @@ namespace Client
             {
                 PrintMessage.PrintColorMessage("Connection!\n\n", ConsoleColor.Cyan);
                 AuthorizationAlg(pcdClient);
+                ActionAlg(pcdClient);
             }
             else
             {
@@ -69,6 +70,12 @@ namespace Client
             }
 
             PrintMessage.PrintColorMessage("\nAuthentication is successful!\n\n", ConsoleColor.Green);
+        }
+
+        private static void ActionAlg(PcdClient pcdClient)
+        {
+            LsComR com = new LsComR(pcdClient.clientInfo.sessionId);
+            bool o = pcdClient.ExecuteAction(com);
         }
     }
 }

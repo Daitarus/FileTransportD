@@ -4,15 +4,9 @@ namespace CommandsKit
 {
     internal static class ExecuteAnswer
     {
-        public static bool Authentication(Transport transport, ref ClientInfo clientInfo, bool answer)
+        public static void Ls(string lsInfo)
         {
-            clientInfo.authentication = answer;
-            return answer;
-        }
-
-        public static bool Registration(Transport transport, ref ClientInfo clientInfo, bool answer)
-        {
-            return answer;
+            Console.Write(lsInfo);
         }
     }
 }

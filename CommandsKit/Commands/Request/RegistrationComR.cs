@@ -34,27 +34,21 @@ namespace CommandsKit
             Array.Copy(sessionId, 0, payload, loginBytes.Length + hashAuthentication.Length, sessionId.Length);
         }
 
-        public override byte[] ToBytes()
-        {
-            byte[] bytes = new byte[1 + payload.Length];
-
-            bytes[0] = typeCom;
-            Array.Copy(payload, 0, bytes, 1, payload.Length);
-
-            return bytes;
-        }
-
         public override bool ExecuteCommand(Transport transport, ref ClientInfo clientInfo)
         {
+            bool answer = false;
             if (Enumerable.SequenceEqual(clientInfo.sessionId, sessionId))
             {
                 if (!clientInfo.authentication)
                 {
-                    return ExecuteRequest.Registration(transport, ref clientInfo, sessionId, login, hashAuthentication);
+                    answer = ExecuteRequest.Registration(login, hashAuthentication);
                 }
             }
 
-            return false;
+            RegistrationComA com = new RegistrationComA(answer, clientInfo.sessionId);
+            transport.SendData(clientInfo.aes.Encrypt(com.ToBytes()));
+
+            return answer;
         }
 
         public static RegistrationComR BytesToCom(byte[] payload)

@@ -10,5 +10,6 @@ namespace ProtocolCryptographyD
         public CryptAES aes;
         public byte[] sessionId;
         public bool authentication;
+        public int clientId;
     }
 }

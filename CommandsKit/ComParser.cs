@@ -40,6 +40,14 @@ namespace CommandsKit
                     {
                         return RegistrationComA.BytesToCom(payload);
                     }
+                case TypeCommand.LS_R:
+                    {
+                        return LsComR.BytesToCom(payload);
+                    }
+                case TypeCommand.LS_A:
+                    {
+                        return LsComA.BytesToCom(payload);
+                    }
                 default:
                     {
                         return UnknowCom.BytesToCom(payload);

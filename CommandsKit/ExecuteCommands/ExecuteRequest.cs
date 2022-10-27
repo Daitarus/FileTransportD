@@ -7,24 +7,26 @@ namespace CommandsKit
 {
     internal static class ExecuteRequest
     {
-        public static bool Authentication(Transport transport, ref ClientInfo clientInfo, byte[] sessionId, byte[] hashAuthentication)
+        public static bool Authentication(ref ClientInfo clientInfo, byte[] hashAuthentication)
         {
             RepositoryClient clientR = new RepositoryClient();
             Client? client = clientR.SelectForHash(hashAuthentication);
-            bool answer = (client != null);
 
-            AuthenticationComA com = new AuthenticationComA(answer, sessionId);
-            clientInfo.authentication = answer;
+            bool answer = false;
+            if (client != null)
+            {
+                answer = true;
+                clientInfo.clientId = client.Id;
+            }
 
-            transport.SendData(clientInfo.aes.Encrypt(com.ToBytes()));
+            clientInfo.authentication = answer;           
 
             return answer;
         }
-        public static bool Registration(Transport transport, ref ClientInfo clientInfo, byte[] sessionId, string login, byte[] hashAuthentication)
+        public static bool Registration(string login, byte[] hashAuthentication)
         {
             RepositoryClient clientR = new RepositoryClient();
             Client? client = clientR.SelectForName(login);
-            RegistrationComA com;
             bool answer = false;
 
             if (client == null)
@@ -36,10 +38,29 @@ namespace CommandsKit
                 answer = true;
             }
 
-            com = new RegistrationComA(answer, sessionId);
-            transport.SendData(clientInfo.aes.Encrypt(com.ToBytes()));
-
             return answer;
+        }
+        public static string Ls(ClientInfo clientInfo)
+        {
+            RepositoryClientFile clientFileR = new RepositoryClientFile();
+            List<int> allFileId = clientFileR.IdFileForClient(clientInfo.clientId);
+            StringBuilder lsInfo = new StringBuilder("");
+
+            if(allFileId.Count > 0)
+            {
+                RepositoryFile fileR = new RepositoryFile();
+                foreach(int id in allFileId)
+                {
+                    ServerRepository.File? file = fileR.SelectId(id);
+                    if(file != null)
+                    {
+                        lsInfo.Append(file.Path);
+                        lsInfo.Append('\n');
+                    }
+                }
+            }
+
+            return lsInfo.ToString();
         }
     }
 }
