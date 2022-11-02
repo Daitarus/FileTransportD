@@ -62,12 +62,50 @@ namespace ProtocolCryptographyD
             }
         }
 
-        public bool ExecuteAction(Command com)
+        public bool ServeCommand(Command com)
         {
             try
             {
                 transport.SendData(clientInfo.aes.Encrypt(com.ToBytes()));
                 com = parser.Parse(clientInfo.aes.Decrypt(transport.GetData()));
+                return com.ExecuteCommand(transport, ref clientInfo);
+            }
+            catch (Exception e)
+            {
+                Disconnect();
+                return false;
+            }
+        }
+        public bool SendCommand(Command com)
+        {
+            try
+            {
+                transport.SendData(clientInfo.aes.Encrypt(com.ToBytes()));
+                return true;
+            }
+            catch (Exception e)
+            {
+                Disconnect();
+                return false;
+            }
+        }
+        public Command? GetCommand()
+        {
+            Command? com = null;
+            try
+            {
+                com = parser.Parse(clientInfo.aes.Decrypt(transport.GetData()));
+            }
+            catch (Exception e)
+            {
+                Disconnect();
+            }
+            return com;
+        }
+        public bool ExecuteCommand(Command com)
+        {
+            try
+            {
                 return com.ExecuteCommand(transport, ref clientInfo);
             }
             catch (Exception e)

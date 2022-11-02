@@ -24,24 +24,20 @@ namespace ProtocolCryptographyD
             byte[] lengthPayLoadBuffer = new byte[lengthArrayLengthPayload];
             socket.Receive(lengthPayLoadBuffer);
             int lengthPayLoad = GetLength(lengthPayLoadBuffer);
+            
+            byte[] payLoad = new byte[lengthPayLoad];
 
-            byte[] buffer = new byte[256];
-            List<byte> payLoad = new List<byte>();
-            int byteCounter = 0;
+            if (lengthPayLoad > maxLengthPack)
+                throw new ArgumentException($"{nameof(payLoad)} size greater than {maxLengthPack}", nameof(lengthPayLoad));
 
-            for (int i = 0; i < lengthPayLoad / buffer.Length; i++)
+            int byteCounter = 0, byteCounterOld = 0;
+            while (byteCounter < lengthPayLoad)
             {
-                byteCounter += socket.Receive(buffer);
-                payLoad.AddRange(buffer);
-            }
-            if (lengthPayLoad - byteCounter > 0)
-            {
-                buffer = new byte[lengthPayLoad - byteCounter];
-                socket.Receive(buffer);
-                payLoad.AddRange(buffer);
+                byteCounter += socket.Receive(payLoad, byteCounterOld, lengthPayLoad - byteCounterOld, SocketFlags.None);
+                byteCounterOld = byteCounter;
             }
 
-            return payLoad.ToArray();
+            return payLoad;
         }
 
         private byte[] AddLength(byte[] payLoad)

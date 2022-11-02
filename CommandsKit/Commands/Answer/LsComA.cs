@@ -8,7 +8,7 @@ namespace CommandsKit
         public readonly string lsInfo;
         public LsComA(string lsInfo, byte[] sessionId)
         {
-            if (lsInfo == null)
+            if(lsInfo == null)
                 throw new ArgumentNullException(nameof(lsInfo));
             if (sessionId == null)
                 throw new ArgumentNullException(nameof(sessionId));

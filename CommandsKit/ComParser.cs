@@ -48,6 +48,14 @@ namespace CommandsKit
                     {
                         return LsComA.BytesToCom(payload);
                     }
+                case TypeCommand.FILE_GET_R:
+                    {
+                        return FileGetComR.BytesToCom(payload);
+                    }
+                case TypeCommand.FILE_GET_A:
+                    {
+                        return FileGetComA.BytesToCom(payload);
+                    }
                 default:
                     {
                         return UnknowCom.BytesToCom(payload);

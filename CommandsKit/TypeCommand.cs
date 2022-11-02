@@ -8,6 +8,10 @@
         REGISTRATION_R = 3,
         REGISTRATION_A = 4,
         LS_R = 5,
-        LS_A = 6       
+        LS_A = 6,
+        FILE_GET_R = 7,
+        FILE_GET_A = 8,
+        FILE_SET_R = 9,
+        FILE_SET_A = 10
     }
 }
