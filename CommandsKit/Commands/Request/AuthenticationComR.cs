@@ -22,13 +22,19 @@ namespace CommandsKit
             typeCom = (byte)TypeCommand.AUTHORIZATION_R;
             this.hashAuthentication = hashAuthentication;
             this.sessionId = sessionId;
-
-            payload = new byte[hashAuthentication.Length + sessionId.Length];
-            Array.Copy(hashAuthentication, 0, payload, 0, hashAuthentication.Length);
-            Array.Copy(sessionId, 0, payload, hashAuthentication.Length, sessionId.Length);
         }
 
-        public override bool ExecuteCommand(Transport transport, ref ClientInfo clientInfo)
+        public override byte[] ToBytes()
+        {
+            byte[] payload = new byte[1 + hashAuthentication.Length + sessionId.Length];
+            payload[0] = typeCom;
+            Array.Copy(hashAuthentication, 0, payload, 1, hashAuthentication.Length);
+            Array.Copy(sessionId, 0, payload, 1 + hashAuthentication.Length, sessionId.Length);
+
+            return payload;
+        }
+
+        public override bool ExecuteCommand(ref Transport transport, ref ClientInfo clientInfo)
         {
             bool answer = false;
             if (Enumerable.SequenceEqual(clientInfo.sessionId, sessionId))
@@ -57,6 +63,7 @@ namespace CommandsKit
 
             Array.Copy(payload, 0, hashAuth, 0, hashAuth.Length);
             Array.Copy(payload, hashAuth.Length, sessionId, 0, sessionId.Length);
+
             return new AuthenticationComR(hashAuth, sessionId);
         }
     }

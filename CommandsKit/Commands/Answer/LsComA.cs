@@ -17,20 +17,31 @@ namespace CommandsKit
 
             typeCom = (byte)TypeCommand.LS_A;
             this.lsInfo = lsInfo;
-            this.sessionId = sessionId;
-
-            byte[] lsInfoBytes = new byte[0];
-            
-            if (lsInfo.Length > 0)
-            {
-                lsInfoBytes = Encoding.UTF8.GetBytes(lsInfo);
-                payload = new byte[lsInfoBytes.Length + sessionId.Length];
-                Array.Copy(lsInfoBytes, 0, payload, 0, lsInfoBytes.Length);
-            }
-            Array.Copy(sessionId, 0, payload, lsInfoBytes.Length, sessionId.Length);
+            this.sessionId = sessionId;           
         }
 
-        public override bool ExecuteCommand(Transport transport, ref ClientInfo clientInfo)
+        public override byte[] ToBytes()
+        {
+            byte[] payload;
+            if (lsInfo.Length > 0)
+            {
+                byte[] lsInfoBytes = Encoding.UTF8.GetBytes(lsInfo);
+                payload = new byte[1 + lsInfoBytes.Length + sessionId.Length];
+                payload[0] = typeCom;
+                Array.Copy(lsInfoBytes, 0, payload, 1, lsInfoBytes.Length);
+                Array.Copy(sessionId, 0, payload, 1 + lsInfoBytes.Length, sessionId.Length);
+            }
+            else
+            {
+                payload = new byte[1 + sessionId.Length];
+                payload[0] = typeCom;
+                Array.Copy(sessionId, 0, payload, 1, sessionId.Length);
+            }
+
+            return payload;
+        }
+
+        public override bool ExecuteCommand(ref Transport transport, ref ClientInfo clientInfo)
         {
             ExecuteAnswer.Ls(lsInfo);
             return true;

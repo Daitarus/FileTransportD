@@ -9,6 +9,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\CommandsKit\CommandsKit.csproj" />
+    <ProjectReference Include="..\..\ConsoleWorker\ConsoleWorker.csproj" />
     <ProjectReference Include="..\..\ProtocolCryptographyD\ProtocolCryptographyD.csproj" />
   </ItemGroup>
 

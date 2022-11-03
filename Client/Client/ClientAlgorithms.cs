@@ -1,11 +1,7 @@
 ﻿using CommandsKit;
 using CryptL;
 using ProtocolCryptographyD;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using ConsoleWorker;
 
 namespace Client
 {
@@ -57,7 +53,8 @@ namespace Client
 
         public static void ActionAlg(PcdClient pcdClient)
         {
-            while (true)
+            bool noErrorConnection = true;
+            while (noErrorConnection)
             {
                 int comEnter = EnterData.EnterNumAction(new string[] { "Print my files", "Get File" });
                 Command com;
@@ -67,52 +64,21 @@ namespace Client
                     case 1:
                         {
                             com = new LsComR(pcdClient.clientInfo.sessionId);
-                            if(!pcdClient.ServeCommand(com))
+                            if (!pcdClient.ServeCommand(com))
                             {
-                                PrintMessage.PrintColorMessage("Error connection!\n", ConsoleColor.Red);
+                                noErrorConnection = false;
+                                PrintMessage.PrintColorMessage("\nError connection!\n", ConsoleColor.Red);
                             }
                             break;
                         }
                     case 2:
                         {
                             int id = EnterData.EnterInt32Message("Enter file id: ", "Error: Incorrect data!\n");
-
                             com = new FileGetComR(id, pcdClient.clientInfo.sessionId);
-                            bool noErrorConnection = pcdClient.SendCommand(com);
-                            if (noErrorConnection)
+                            if (!pcdClient.ServeCommands(com))
                             {
-                                
-                                bool cycleGetFileBlock = true;
-
-                                while (cycleGetFileBlock)
-                                {
-                                    com = pcdClient.GetCommand();
-
-                                    noErrorConnection = (com != null);
-                                    if (noErrorConnection)
-                                    {
-                                        noErrorConnection = (com.TypeCom == (byte)TypeCommand.FILE_GET_A);
-                                        if (noErrorConnection)
-                                        {
-                                            FileGetComA comFile = (FileGetComA)com;
-                                            noErrorConnection = pcdClient.ExecuteCommand(comFile);
-                                            PrintMessage.PrintColorMessage(PrintMessage.GetLoadString("Download", comFile.numBlock, comFile.allBlock), ConsoleColor.White);
-                                            if (noErrorConnection)
-                                            {
-                                                cycleGetFileBlock = !(comFile.numBlock == comFile.allBlock - 1);
-                                            }
-                                        }
-                                    }
-                                    if (!noErrorConnection)
-                                    {
-                                        cycleGetFileBlock = noErrorConnection;
-                                    }
-                                }
-                                Console.WriteLine();
-                            }   
-                            if(!noErrorConnection)
-                            {
-                                PrintMessage.PrintColorMessage("Error conection!\n", ConsoleColor.Red);
+                                noErrorConnection = false;
+                                PrintMessage.PrintColorMessage("\nError connection!\n", ConsoleColor.Red);
                             }
                             break;
                         }

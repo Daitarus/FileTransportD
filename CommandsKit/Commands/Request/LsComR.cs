@@ -15,8 +15,6 @@ namespace CommandsKit
 
             typeCom = (byte)TypeCommand.LS_R;
             this.sessionId = sessionId;
-
-            payload = sessionId;
         }
         public LsComR(byte[] args, byte[] sessionId)
         {
@@ -30,13 +28,18 @@ namespace CommandsKit
             typeCom = (byte)TypeCommand.LS_R;
             this.args = args;
             this.sessionId = sessionId;
-
-            payload = new byte[args.Length + sessionId.Length];
-            Array.Copy(args, 0, payload, 0, args.Length);
-            Array.Copy(sessionId, 0, payload, args.Length, sessionId.Length);
         }
 
-        public override bool ExecuteCommand(Transport transport, ref ClientInfo clientInfo)
+        public override byte[] ToBytes()
+        {
+            byte[] payload = new byte[1 + args.Length + sessionId.Length];
+            payload[0] = typeCom;
+            Array.Copy(args, 0, payload, 1, args.Length);
+            Array.Copy(sessionId, 0, payload, 1 + args.Length, sessionId.Length);
+
+            return payload;
+        }
+        public override bool ExecuteCommand(ref Transport transport, ref ClientInfo clientInfo)
         {
             string lsInfo = "";
 

@@ -25,16 +25,21 @@ namespace CommandsKit
             typeCom = (byte)TypeCommand.REGISTRATION_R;
             this.login = login;
             this.hashAuthentication = hashAuthentication;
-            this.sessionId = sessionId;
-
-            payload = new byte[login.Length + hashAuthentication.Length + sessionId.Length];
-            byte[] loginBytes = Encoding.UTF8.GetBytes(login);
-            Array.Copy(loginBytes, 0, payload, 0, loginBytes.Length);
-            Array.Copy(hashAuthentication, 0, payload, loginBytes.Length, hashAuthentication.Length);
-            Array.Copy(sessionId, 0, payload, loginBytes.Length + hashAuthentication.Length, sessionId.Length);
+            this.sessionId = sessionId;            
         }
 
-        public override bool ExecuteCommand(Transport transport, ref ClientInfo clientInfo)
+        public override byte[] ToBytes()
+        {
+            byte[] payload = new byte[1 + login.Length + hashAuthentication.Length + sessionId.Length];
+            byte[] loginBytes = Encoding.UTF8.GetBytes(login);
+            payload[0] = typeCom;
+            Array.Copy(loginBytes, 0, payload, 1, loginBytes.Length);
+            Array.Copy(hashAuthentication, 0, payload, 1 + loginBytes.Length, hashAuthentication.Length);
+            Array.Copy(sessionId, 0, payload, 1 + loginBytes.Length + hashAuthentication.Length, sessionId.Length);
+
+            return payload;
+        }
+        public override bool ExecuteCommand(ref Transport transport, ref ClientInfo clientInfo)
         {
             bool answer = false;
             if (Enumerable.SequenceEqual(clientInfo.sessionId, sessionId))

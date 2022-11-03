@@ -75,7 +75,7 @@ namespace ProtocolCryptographyD
                     while(true)
                     {
                         Command com = parser.Parse(clientInfo.aes.Decrypt(transport.GetData()));
-                        com.ExecuteCommand(transport, ref clientInfo);
+                        com.ExecuteCommand(ref transport, ref clientInfo);
                     }
                 }
 
@@ -91,7 +91,7 @@ namespace ProtocolCryptographyD
         {
             try
             {
-                socket.Shutdown(SocketShutdown.Both);
+                socket.Disconnect(false);
                 socket.Close();
                 return true;
             }

@@ -1,5 +1,4 @@
-﻿using CryptL;
-using ProtocolCryptographyD;
+﻿using ProtocolCryptographyD;
 
 namespace CommandsKit
 {
@@ -18,20 +17,35 @@ namespace CommandsKit
             {
                 this.bytes = bytes;
             }
-            this.sessionId = sessionId;
+            this.sessionId = sessionId;          
+
+        }
+        public override byte[] ToBytes()
+        {
+            byte[] payload;
 
             if (bytes != null)
             {
-                payload = new byte[bytes.Length + sessionId.Length];
-                Array.Copy(bytes, 0, payload, 0, bytes.Length);
-                Array.Copy(sessionId, 0, payload, bytes.Length, sessionId.Length);
+                payload = new byte[1 + bytes.Length + sessionId.Length];
+                Array.Copy(bytes, 0, payload, 1, bytes.Length);
+                Array.Copy(sessionId, 0, payload, 1 + bytes.Length, sessionId.Length);
             }
             else
             {
+                payload = new byte[1 + sessionId.Length];
+                Array.Copy(sessionId, 0, payload, 1, sessionId.Length);
                 payload = sessionId;
             }
+            payload[0] = typeCom;
 
+            return payload;
         }
+
+        public override bool ExecuteCommand(ref Transport transport, ref ClientInfo clientInfo)
+        {
+            return true;
+        }
+
         public static UnknowCom BytesToCom(byte[] payload)
         {
             if (payload == null)

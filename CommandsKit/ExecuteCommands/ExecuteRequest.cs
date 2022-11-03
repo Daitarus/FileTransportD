@@ -95,23 +95,27 @@ namespace CommandsKit
                      answer = (fileInfo.Exists);
                     if (answer)
                     {
-                        int numAllBlock = (int)Math.Ceiling((double)fileInfo.Length / (double)MaxLengthBlock);
-                        answer = ((fileInfo.Length > 0) && (numAllBlock < 256));
+                        answer = fileInfo.Length <= Math.Pow(255, 3);
                         if (answer)
-                        {                            
-                            using (FileStream fstream = System.IO.File.Open(fileInfo.FullName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+                        {
+                            int numAllBlock = (int)Math.Ceiling((double)fileInfo.Length / (double)MaxLengthBlock);
+                            answer = ((fileInfo.Length > 0) && (numAllBlock < 256));
+                            if (answer)
                             {
-                                for (byte i = 0; i < numAllBlock; i++)
+                                using (FileStream fstream = System.IO.File.Open(fileInfo.FullName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
                                 {
-                                    byte[] buffer = new byte[MaxLengthBlock];
-                                    fstream.Seek(i * MaxLengthBlock, SeekOrigin.Begin);
-                                    int numReadByte = fstream.Read(buffer);
-                                    byte[] bufferFile = new byte[numReadByte];
-                                    Array.Copy(buffer, 0, bufferFile, 0, numReadByte);
+                                    for (byte i = 0; i < numAllBlock; i++)
+                                    {
+                                        byte[] buffer = new byte[MaxLengthBlock];
+                                        long beginRead = (long)i * (long)MaxLengthBlock;
+                                        fstream.Seek(beginRead, SeekOrigin.Begin);
+                                        int numReadByte = fstream.Read(buffer);
+                                        byte[] bufferFile = new byte[numReadByte];
+                                        Array.Copy(buffer, 0, bufferFile, 0, numReadByte);
 
-
-                                    Command com = new FileGetComA(i, (byte)numAllBlock, (byte)fileInfoBytes.Length, fileInfoBytes, bufferFile, clientInfo.sessionId);
-                                    transport.SendData(clientInfo.aes.Encrypt(com.ToBytes()));
+                                        Command com = new FileGetComA(i, (byte)numAllBlock, (byte)fileInfoBytes.Length, fileInfoBytes, bufferFile, clientInfo.sessionId);
+                                        transport.SendData(clientInfo.aes.Encrypt(com.ToBytes()));
+                                    }
                                 }
                             }
                         }

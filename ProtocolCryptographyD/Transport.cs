@@ -6,6 +6,7 @@ namespace ProtocolCryptographyD
     {
         private int maxLengthPack = Command.MaxLengthData + 1;
         private const int lengthArrayLengthPayload = 3;
+        private static long ALLLength = 0;
 
         private Socket socket;
 
@@ -17,13 +18,22 @@ namespace ProtocolCryptographyD
         public void SendData(byte[] payLoad)
         {
             payLoad = AddLength(payLoad);
+            ALLLength += payLoad.Length;
+            if(ALLLength == 2164260465)
+            { }
             socket.Send(payLoad);
         }
         public byte[] GetData()
         {
             byte[] lengthPayLoadBuffer = new byte[lengthArrayLengthPayload];
-            socket.Receive(lengthPayLoadBuffer);
+            if(socket.Available==0)
+            { }
+            socket.Receive(lengthPayLoadBuffer, lengthArrayLengthPayload, SocketFlags.None);
+
             int lengthPayLoad = GetLength(lengthPayLoadBuffer);
+
+            if(lengthPayLoad==0)
+            { }
             
             byte[] payLoad = new byte[lengthPayLoad];
 
@@ -37,6 +47,7 @@ namespace ProtocolCryptographyD
                 byteCounterOld = byteCounter;
             }
 
+            ALLLength += payLoad.Length;
             return payLoad;
         }
 

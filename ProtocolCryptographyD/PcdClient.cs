@@ -68,7 +68,7 @@ namespace ProtocolCryptographyD
             {
                 transport.SendData(clientInfo.aes.Encrypt(com.ToBytes()));
                 com = parser.Parse(clientInfo.aes.Decrypt(transport.GetData()));
-                return com.ExecuteCommand(transport, ref clientInfo);
+                return com.ExecuteCommand(ref transport, ref clientInfo);
             }
             catch (Exception e)
             {
@@ -76,37 +76,21 @@ namespace ProtocolCryptographyD
                 return false;
             }
         }
-        public bool SendCommand(Command com)
+        public bool ServeCommands(Command com)
         {
             try
             {
+                bool repeater = true;
+
                 transport.SendData(clientInfo.aes.Encrypt(com.ToBytes()));
+
+                while (repeater)
+                {
+                    com = parser.Parse(clientInfo.aes.Decrypt(transport.GetData()));
+                    repeater = com.ExecuteCommand(ref transport, ref clientInfo);
+                }
+
                 return true;
-            }
-            catch (Exception e)
-            {
-                Disconnect();
-                return false;
-            }
-        }
-        public Command? GetCommand()
-        {
-            Command? com = null;
-            try
-            {
-                com = parser.Parse(clientInfo.aes.Decrypt(transport.GetData()));
-            }
-            catch (Exception e)
-            {
-                Disconnect();
-            }
-            return com;
-        }
-        public bool ExecuteCommand(Command com)
-        {
-            try
-            {
-                return com.ExecuteCommand(transport, ref clientInfo);
             }
             catch (Exception e)
             {
@@ -119,7 +103,7 @@ namespace ProtocolCryptographyD
         {
             try
             {
-                socket.Shutdown(SocketShutdown.Both);
+                socket.Disconnect(false);
                 socket.Close();
                 return true;
             }

@@ -14,23 +14,22 @@ namespace CommandsKit
                 throw new ArgumentOutOfRangeException($"{nameof(sessionId)} size must be {LengthHash}");
 
             typeCom = (byte)TypeCommand.AUTHORIZATION_A;
+            this.answer = answer;            
             this.sessionId = sessionId;
-            this.answer = answer;
-
-            payload = new byte[1 + sessionId.Length];
-
-            if(answer)
-            {
-                payload[0] = 1;
-            }
-            else
-            {
-                payload[0] = 0;
-            }
-            Array.Copy(sessionId, 0, payload, 1, sessionId.Length);
         }
 
-        public override bool ExecuteCommand(Transport transport, ref ClientInfo clientInfo)
+        public override byte[] ToBytes()
+        {
+            byte[] payload = new byte[2 + sessionId.Length];
+
+            payload[0] = typeCom;
+            payload[1] = Convert.ToByte(answer);
+            Array.Copy(sessionId, 0, payload, 2, sessionId.Length);
+
+            return payload;
+        }
+
+        public override bool ExecuteCommand(ref Transport transport, ref ClientInfo clientInfo)
         {
             return answer;
         }
@@ -45,11 +44,7 @@ namespace CommandsKit
             byte[] sessionId = new byte[LengthHash];
             Array.Copy(payload, 1, sessionId, 0, sessionId.Length);
 
-            bool answer = false;
-            if(payload[0]==1)
-            {
-                answer = true;
-            }
+            bool answer = BitConverter.ToBoolean(payload, 0);
 
             return new AuthenticationComA(answer, sessionId);
         }

@@ -16,19 +16,24 @@ namespace CommandsKit
             typeCom = (byte)TypeCommand.FILE_GET_R;
             this.fileId = fileId;
             this.sessionId = sessionId;
+        }
 
+        public override byte[] ToBytes()
+        {
             byte[] fileIdBytes = BitConverter.GetBytes(fileId);
             if (BitConverter.IsLittleEndian)
             {
                 Array.Reverse(fileIdBytes);
             }
 
-            payload = new byte[fileIdBytes.Length + sessionId.Length];
-            Array.Copy(fileIdBytes, 0, payload, 0, fileIdBytes.Length);
-            Array.Copy(sessionId, 0, payload, fileIdBytes.Length, sessionId.Length);
-        }
+            byte[] payload = new byte[1 + fileIdBytes.Length + sessionId.Length];
+            payload[0] = typeCom;
+            Array.Copy(fileIdBytes, 0, payload, 1, fileIdBytes.Length);
+            Array.Copy(sessionId, 0, payload, 1 + fileIdBytes.Length, sessionId.Length);
 
-        public override bool ExecuteCommand(Transport transport, ref ClientInfo clientInfo)
+            return payload;
+        }
+        public override bool ExecuteCommand(ref Transport transport, ref ClientInfo clientInfo)
         {
             bool answer = false;
             if (Enumerable.SequenceEqual(clientInfo.sessionId, sessionId))

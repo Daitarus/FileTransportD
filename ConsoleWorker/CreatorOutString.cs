@@ -1,16 +1,9 @@
 ﻿using System.Text;
 
-namespace Client
+namespace ConsoleWorker
 {
-    public class PrintMessage
+    public static class CreatorOutString
     {
-        public static void PrintColorMessage(string message, ConsoleColor consoleColor)
-        {
-            Console.ForegroundColor = consoleColor;
-            Console.Write(message);
-            Console.ResetColor();
-        }
-
         public static string GetLoadString(string beginStr, int num, int all)
         {
             int numAllChar = 70;
@@ -23,13 +16,13 @@ namespace Client
             loadStr.Append(beginStr);
             loadStr.Append(": [");
 
-            for (int i = 0; i < numLoadChar; i++) 
+            for (int i = 0; i < numLoadChar; i++)
             {
-                loadStr.Append('0');
+                loadStr.Append('I');
             }
             for (int i = numLoadChar; i < numAllChar; i++)
             {
-                loadStr.Append('.');
+                loadStr.Append('_');
             }
 
             loadStr.Append(String.Format("] - {0}/{1}", num, all));

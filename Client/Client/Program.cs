@@ -1,6 +1,7 @@
 ﻿using ProtocolCryptographyD;
 using System.Net;
 using CommandsKit;
+using ConsoleWorker;
 
 namespace Client
 {

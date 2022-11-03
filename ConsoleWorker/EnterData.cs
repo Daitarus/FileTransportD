@@ -1,6 +1,6 @@
 ﻿using System.Net;
 
-namespace Client
+namespace ConsoleWorker
 {
     public static class EnterData
     {
@@ -48,7 +48,7 @@ namespace Client
                 message = Console.ReadLine();
 
                 errorEnter = (message == null);
-                if(errorEnter)
+                if (errorEnter)
                 {
                     PrintMessage.PrintColorMessage(String.Format("{0}\n", answer), ConsoleColor.Red);
                 }
@@ -60,12 +60,12 @@ namespace Client
             bool errorEnter = true;
             int message = 0;
 
-            while(errorEnter)
+            while (errorEnter)
             {
                 PrintMessage.PrintColorMessage(request, ConsoleColor.White);
                 errorEnter = !int.TryParse(Console.ReadLine(), out message);
 
-                if(errorEnter)
+                if (errorEnter)
                 {
                     PrintMessage.PrintColorMessage(String.Format("{0}\n", answer), ConsoleColor.Red);
                 }

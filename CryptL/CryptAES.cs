@@ -53,9 +53,7 @@ namespace CryptL
             if (encryptData == null || encryptData.Length == 0)
                 throw new ArgumentNullException(nameof(encryptData));
 
-            byte[] decryptData =  aes.DecryptCbc(encryptData, aes.IV);
-
-            return decryptData;
+            return aes.DecryptCbc(encryptData, aes.IV);
         }
 
         public byte[] UnionKeyIV()

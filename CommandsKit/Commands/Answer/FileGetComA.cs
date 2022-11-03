@@ -6,9 +6,9 @@ namespace CommandsKit
     {
         public static int MaxLength_Info_Block { get { return MaxLengthData - LengthHash - 4; } }
 
-        public readonly byte numBlock = 0;
-        public readonly byte allBlock = 0;
-        public readonly byte lengthInfo = 0;
+        public readonly byte numBlock;
+        public readonly byte allBlock;
+        public readonly byte lengthInfo;
         public readonly byte[] fileInfo;
         public readonly byte[] fileBlock;
 
@@ -32,24 +32,29 @@ namespace CommandsKit
             this.fileInfo = fileInfo;
             this.fileBlock = fileBlock;
             this.sessionId = sessionId;
-
-            payload = new byte[3 + fileInfo.Length + fileBlock.Length + sessionId.Length];
-
-            payload[0] = numBlock;
-            payload[1] = allBlock;
-            payload[2] = lengthInfo;
-
-            Array.Copy(fileInfo, 0, payload, 3, fileInfo.Length);
-            Array.Copy(fileBlock, 0, payload, 3 + fileInfo.Length, fileBlock.Length);
-            Array.Copy(sessionId, 0, payload, 3 + fileInfo.Length + fileBlock.Length, sessionId.Length);
         }
 
-        public override bool ExecuteCommand(Transport transport, ref ClientInfo clientInfo)
+        public override byte[] ToBytes()
         {
-            ExecuteAnswer.FileGet(clientInfo, numBlock, fileInfo, fileBlock);
-            return true;
-        }
+            byte[] payload = new byte[4 + fileInfo.Length + fileBlock.Length + sessionId.Length];
 
+            payload[0] = typeCom;
+            payload[1] = numBlock;
+            payload[2] = allBlock;
+            payload[3] = lengthInfo;
+
+            Array.Copy(fileInfo, 0, payload, 4, fileInfo.Length);
+            Array.Copy(fileBlock, 0, payload, 4 + fileInfo.Length, fileBlock.Length);
+            Array.Copy(sessionId, 0, payload, 4 + fileInfo.Length + fileBlock.Length, sessionId.Length);
+
+            return payload;
+        }
+        public override bool ExecuteCommand(ref Transport transport, ref ClientInfo clientInfo)
+        {
+            ExecuteAnswer.FileGet(clientInfo, numBlock, allBlock, fileInfo, fileBlock);
+
+            return (numBlock + 1 < allBlock);
+        }
         public static FileGetComA BytesToCom(byte[] payload)
         {
             if (payload == null)
