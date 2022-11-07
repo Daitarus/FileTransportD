@@ -9,7 +9,7 @@
   <ItemGroup>
     <ProjectReference Include="..\ConsoleWorker\ConsoleWorker.csproj" />
     <ProjectReference Include="..\CryptL\CryptL.csproj" />
-    <ProjectReference Include="..\ProtocolCryptographyD\ProtocolCryptographyD.csproj" />
+    <ProjectReference Include="..\ProtocolTransport\ProtocolTransport.csproj" />
     <ProjectReference Include="..\Server\ServerRepository\ServerRepository.csproj" />
   </ItemGroup>
 

@@ -1,8 +1,10 @@
-﻿using ProtocolCryptographyD;
+﻿using ProtocolTransport;
+using ServerRepository;
+using System.Text;
 
 namespace CommandsKit
 {
-    public class FileGetComR : Command
+    public class FileGetComR : CommandRequest
     {
         public readonly int fileId;
 
@@ -33,18 +35,66 @@ namespace CommandsKit
 
             return payload;
         }
-        public override bool ExecuteCommand(ref Transport transport, ref ClientInfo clientInfo)
+        public override void ExecuteCommand(Transport transport, ref ClientInfo clientInfo)
         {
             bool answer = false;
             if (Enumerable.SequenceEqual(clientInfo.sessionId, sessionId))
             {
                 if (clientInfo.authentication)
                 {
-                    answer = ExecuteRequest.FileGet(transport, clientInfo, fileId);
+                    RepositoryClientFile clientFileR = new RepositoryClientFile();
+                    List<int> filesId = clientFileR.IdFileForClient(clientInfo.clientId);
+
+                    foreach (int id in filesId)
+                    {
+                        if (id == fileId)
+                        {
+                            RepositoryFile fileR = new RepositoryFile();
+                            ServerRepository.File file = fileR.SelectId(fileId);
+                            if (file != null)
+                            {
+                                FileInfo fileInfo = new FileInfo(file.FullPath);
+                                byte[] fileInfoBytes = Encoding.UTF8.GetBytes(file.Name);
+                                long MaxLengthBlock = FileGetComA.MaxLength_Info_Block - fileInfoBytes.Length;
+
+                                if (fileInfo.Exists)
+                                {
+                                    if (fileInfo.Length <= (MaxLengthData * 255))
+                                    {
+                                        int numAllBlock = (int)Math.Ceiling((double)fileInfo.Length / (double)MaxLengthBlock);
+                                        if ((fileInfo.Length > 0) && (numAllBlock < 256))
+                                        {
+                                            using (FileStream fstream = System.IO.File.Open(fileInfo.FullName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+                                            {
+                                                for (byte i = 0; i < numAllBlock; i++)
+                                                {
+                                                    byte[] buffer = new byte[MaxLengthBlock];
+                                                    long beginRead = i * MaxLengthBlock;
+                                                    fstream.Seek(beginRead, SeekOrigin.Begin);
+                                                    int numReadByte = fstream.Read(buffer);
+                                                    byte[] bufferFile = new byte[numReadByte];
+                                                    Array.Copy(buffer, 0, bufferFile, 0, numReadByte);
+
+                                                    Command com = new FileGetComA(i, (byte)numAllBlock, (byte)fileInfoBytes.Length, fileInfoBytes, bufferFile, clientInfo.sessionId);
+                                                    transport.SendData(clientInfo.aes.Encrypt(com.ToBytes()));
+                                                }
+                                            }
+                                            answer = true;
+                                        }
+                                    }
+                                }
+                            }
+                            break;
+                        }
+                    }
                 }
             }
 
-            return answer;
+            if (!answer)
+            {
+                Command com = new FileGetComA(0, 1, 0, new byte[0], new byte[0], clientInfo.sessionId);
+                transport.SendData(clientInfo.aes.Encrypt(com.ToBytes()));
+            }
         }
 
         public static FileGetComR BytesToCom(byte[] payload)

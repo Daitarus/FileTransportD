@@ -1,9 +1,10 @@
-﻿using ProtocolCryptographyD;
+﻿using ProtocolTransport;
 using System.Text;
+using ConsoleWorker;
 
 namespace CommandsKit
 {
-    public class LsComA : Command
+    public class LsComA : CommandAnswer
     {
         public readonly string lsInfo;
         public LsComA(string lsInfo, byte[] sessionId)
@@ -41,9 +42,9 @@ namespace CommandsKit
             return payload;
         }
 
-        public override bool ExecuteCommand(ref Transport transport, ref ClientInfo clientInfo)
+        public override bool ExecuteCommand()
         {
-            ExecuteAnswer.Ls(lsInfo);
+            PrintMessage.PrintColorMessage(String.Format("\n{0}\n", lsInfo), ConsoleColor.White);
             return true;
         }
 

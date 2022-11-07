@@ -2,12 +2,12 @@
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using ConsoleWorker;
 
-namespace ProtocolCryptographyD
+namespace ProtocolTransport
 {
     public class PcdServer
     {
-
         private IPEndPoint serverEndPoint;
         private CryptRSA rsa;
         private IParser parser;
@@ -44,7 +44,7 @@ namespace ProtocolCryptographyD
             }
             catch (Exception e)
             {
-
+                PrintMessage.WriteLog(String.Format("{0}\n\n{1}\n\n", e.Message, e.StackTrace));
             }
         }
 
@@ -52,6 +52,7 @@ namespace ProtocolCryptographyD
         {
             //create client info
             ClientInfo clientInfo = CreateClientInfo((IPEndPoint)socket.RemoteEndPoint, DateTime.Now);
+            PrintMessage.WriteLog(String.Format("Client connect - {0}", clientInfo.ToString()));
 
             try
             {
@@ -66,6 +67,7 @@ namespace ProtocolCryptographyD
                 if (AesKeyCom.ParseToCom(rsa.Decrypt(transport.GetData()), out aesCom))
                 {
                     clientInfo.aes = new CryptAES(aesCom.unionKeyIV);
+                    PrintMessage.WriteLog(String.Format("Client exchange crypto key - {0}", clientInfo.ToString()));
 
                     //send hash(SessionId)
                     SessionIdCom sessionIdCom = new SessionIdCom(clientInfo.sessionId);
@@ -75,24 +77,30 @@ namespace ProtocolCryptographyD
                     while(true)
                     {
                         Command com = parser.Parse(clientInfo.aes.Decrypt(transport.GetData()));
-                        com.ExecuteCommand(ref transport, ref clientInfo);
+                        if (com is CommandRequest)
+                        {
+                            CommandRequest comRequest = (CommandRequest)com;
+                            comRequest.ExecuteCommand(transport, ref clientInfo);
+                        }
                     }
                 }
 
-                Disconnect(socket);
+                Disconnect(socket, clientInfo);
             }
             catch (Exception e)
             {
-                Disconnect(socket);
+                PrintMessage.WriteLog(String.Format("{0}\n\n{1}\n\n", e.Message, e.StackTrace));
+                Disconnect(socket, clientInfo);
             }
         }
 
-        private bool Disconnect(Socket socket)
+        private bool Disconnect(Socket socket, ClientInfo clientInfo)
         {
             try
             {
                 socket.Disconnect(false);
                 socket.Close();
+                PrintMessage.WriteLog(String.Format("Client disconnect - {0}", clientInfo.ToString()));
                 return true;
             }
             catch (Exception e)

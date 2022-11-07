@@ -1,8 +1,8 @@
-﻿using ProtocolCryptographyD;
+﻿using ProtocolTransport;
 
 namespace CommandsKit
 {
-    public class RegistrationComA : Command
+    public class RegistrationComA : CommandAnswer
     {
         public readonly bool answer;
 
@@ -29,7 +29,7 @@ namespace CommandsKit
             return payload;
         }
 
-        public override bool ExecuteCommand(ref Transport transport, ref ClientInfo clientInfo)
+        public override bool ExecuteCommand()
         {
             return answer;
         }

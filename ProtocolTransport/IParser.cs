@@ -1,6 +1,4 @@
-﻿using ProtocolCryptographyD;
-
-namespace ProtocolCryptographyD
+﻿namespace ProtocolTransport
 {
     public interface IParser
     {

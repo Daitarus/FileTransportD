@@ -10,7 +10,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\CommandsKit\CommandsKit.csproj" />
     <ProjectReference Include="..\..\ConsoleWorker\ConsoleWorker.csproj" />
-    <ProjectReference Include="..\..\ProtocolCryptographyD\ProtocolCryptographyD.csproj" />
+    <ProjectReference Include="..\..\ProtocolTransport\ProtocolTransport.csproj" />
   </ItemGroup>
 
 </Project>

@@ -1,4 +1,4 @@
-﻿namespace ProtocolCryptographyD
+﻿namespace ProtocolTransport
 {
     internal enum TypeComAuth : byte
     {

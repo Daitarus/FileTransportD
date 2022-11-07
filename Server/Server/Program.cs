@@ -1,8 +1,9 @@
 ﻿using CommandsKit;
-using ProtocolCryptographyD;
+using ProtocolTransport;
 using System.Net;
 using ServerRepository;
 using System.Configuration;
+using ConsoleWorker;
 
 namespace Server
 {
@@ -25,12 +26,12 @@ namespace Server
                 IPEndPoint serverEndPoint = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 5000);
                 PcdServer server = new PcdServer(serverEndPoint, new ComParser());
 
-                Console.WriteLine("Server running!");
+                PrintMessage.PrintColorMessage("Server running!\n", ConsoleColor.Cyan);
                 server.Start();
             }
             else
             {
-                Console.WriteLine("Error: Server not running!");
+                PrintMessage.PrintColorMessage("Error: Server not running!\n", ConsoleColor.Red);
             }
         }
     }

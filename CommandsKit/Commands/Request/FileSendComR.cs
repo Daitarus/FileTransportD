@@ -4,7 +4,7 @@ using System.Text;
 
 namespace CommandsKit
 {
-    public class FileGetComA : CommandAnswer
+    public class FileSendComR : CommandRequest
     {
         public static long MaxLength_Info_Block { get { return MaxLengthData - LengthHash - 4; } }
 
@@ -14,7 +14,7 @@ namespace CommandsKit
         public readonly byte[] fileInfo;
         public readonly byte[] fileBlock;
 
-        public FileGetComA(byte numBlock, byte allBlock, byte lengthInfo, byte[] fileInfo, byte[] fileBlock, byte[] sessionId)
+        public FileSendComR(byte numBlock, byte allBlock, byte lengthInfo, byte[] fileInfo, byte[] fileBlock, byte[] sessionId)
         {
             if (fileInfo == null)
                 throw new ArgumentNullException(nameof(fileInfo));
@@ -51,32 +51,34 @@ namespace CommandsKit
 
             return payload;
         }
-        public override bool ExecuteCommand()
+        public override void ExecuteCommand(Transport transport, ref ClientInfo clientInfo)
         {
-            string fileInfoStr = Encoding.UTF8.GetString(this.fileInfo);
-            FileInfo fileInfo = new FileInfo(fileInfoStr);
+            Command com = new FileSendComA(false, sessionId);
 
-            FileMode fmode = FileMode.Append;
-            if (numBlock == 0)
+            if (Enumerable.SequenceEqual(clientInfo.sessionId, sessionId))
             {
-                fmode = FileMode.Create;
+                if (clientInfo.authentication)
+                {
+                    FileInfo fileInfo = new FileInfo(Encoding.UTF8.GetString(this.fileInfo));
+
+                    FileMode fmode = FileMode.Append;
+                    if (numBlock == 0)
+                    {
+                        fmode = FileMode.Create;
+                    }
+
+                    using (FileStream fstream = new FileStream(fileInfo.FullName, fmode, FileAccess.Write, FileShare.ReadWrite))
+                    {
+                        fstream.Write(fileBlock);
+                    }
+
+                    com = new FileSendComA(true, sessionId);
+                }
             }
 
-            using (FileStream fstream = new FileStream(fileInfo.FullName, fmode, FileAccess.Write, FileShare.ReadWrite))
-            {
-                fstream.Write(fileBlock);
-            }
-
-            string outStr = String.Format("Download \"{0}\"", fileInfoStr);
-            PrintMessage.PrintColorMessage(CreatorOutString.GetLoadString(outStr, numBlock, allBlock), ConsoleColor.White);
-            if (numBlock + 1 == allBlock)
-            {
-                Console.WriteLine();
-            }
-
-            return (numBlock + 1 < allBlock);
+            transport.SendData(clientInfo.aes.Encrypt(com.ToBytes()));
         }
-        public static FileGetComA BytesToCom(byte[] payload)
+        public static FileSendComR BytesToCom(byte[] payload)
         {
             if (payload == null)
                 throw new ArgumentNullException(nameof(payload));
@@ -93,7 +95,7 @@ namespace CommandsKit
             Array.Copy(payload, 3 + fileInfo.Length, fileBlock, 0, fileBlock.Length);
             Array.Copy(payload, 3 + fileInfo.Length + fileBlock.Length, sessionId, 0, sessionId.Length);
 
-            return new FileGetComA(numBlock, allBlock, lengthInfo, fileInfo, fileBlock, sessionId);
+            return new FileSendComR(numBlock, allBlock, lengthInfo, fileInfo, fileBlock, sessionId);
         }
     }
 }

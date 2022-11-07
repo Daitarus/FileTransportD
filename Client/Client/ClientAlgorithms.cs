@@ -1,6 +1,6 @@
 ﻿using CommandsKit;
 using CryptL;
-using ProtocolCryptographyD;
+using ProtocolTransport;
 using ConsoleWorker;
 
 namespace Client
@@ -9,7 +9,7 @@ namespace Client
     {
         public static void AuthorizationAlg(PcdClient pcdClient)
         {
-            Command comProtocol;
+            CommandRequest comProtocol;
             string login, password;
             bool successfulAuthentication = false;
 
@@ -56,8 +56,8 @@ namespace Client
             bool noErrorConnection = true;
             while (noErrorConnection)
             {
-                int comEnter = EnterData.EnterNumAction(new string[] { "Print my files", "Get File" });
-                Command com;
+                int comEnter = EnterData.EnterNumAction(new string[] { "Print my files", "Get file", "Add file" });
+                CommandRequest com;
 
                 switch (comEnter)
                 {
@@ -80,6 +80,12 @@ namespace Client
                                 noErrorConnection = false;
                                 PrintMessage.PrintColorMessage("\nError connection!\n", ConsoleColor.Red);
                             }
+                            break;
+                        }
+                    case 3:
+                        {
+                            string path = "kali.7z";
+                            
                             break;
                         }
                 }

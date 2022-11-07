@@ -1,8 +1,10 @@
-﻿using ProtocolCryptographyD;
+﻿using ProtocolTransport;
+using ServerRepository;
+using System.Text;
 
 namespace CommandsKit
 {
-    public class LsComR : Command
+    public class LsComR : CommandRequest
     {
         public readonly byte[] args = new byte[0];
 
@@ -39,7 +41,7 @@ namespace CommandsKit
 
             return payload;
         }
-        public override bool ExecuteCommand(ref Transport transport, ref ClientInfo clientInfo)
+        public override void ExecuteCommand(Transport transport, ref ClientInfo clientInfo)
         {
             string lsInfo = "";
 
@@ -47,14 +49,26 @@ namespace CommandsKit
             {
                 if (clientInfo.authentication)
                 {
-                    lsInfo = ExecuteRequest.Ls(clientInfo);
+                    RepositoryClientFile clientFileR = new RepositoryClientFile();
+                    List<int> allFileId = clientFileR.IdFileForClient(clientInfo.clientId);
+
+                    if (allFileId.Count > 0)
+                    {
+                        RepositoryFile fileR = new RepositoryFile();
+                        foreach (int id in allFileId)
+                        {
+                            ServerRepository.File? file = fileR.SelectId(id);
+                            if (file != null)
+                            {
+                                lsInfo += String.Format("Id:{0} Path:{1}\n", file.Id, file.Path);
+                            }
+                        }
+                    }
                 }
             }
 
-            LsComA com = new LsComA(lsInfo.ToString(), clientInfo.sessionId);
+            LsComA com = new LsComA(lsInfo, clientInfo.sessionId);
             transport.SendData(clientInfo.aes.Encrypt(com.ToBytes()));
-
-            return (lsInfo.Length > 0);
         }
 
         public static LsComR BytesToCom(byte[] payload)

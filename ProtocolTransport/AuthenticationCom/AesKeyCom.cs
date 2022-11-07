@@ -1,33 +1,32 @@
 ﻿using CryptL;
 
-namespace ProtocolCryptographyD
+namespace ProtocolTransport
 {
-    internal class RsaPkeyCom
+    internal class AesKeyCom
     {
-        public readonly byte[] publicKey;
+        public readonly byte[] unionKeyIV;
         public readonly TypeComAuth type;
-        public RsaPkeyCom(byte[] publicKey)
+        public AesKeyCom(byte[] payLoad)
         {
-            type = TypeComAuth.RSAPKEY;
+            type = TypeComAuth.AESKEY;
 
-            CryptRSA.CheckExeptionKey(publicKey, false);
-
-            this.publicKey = publicKey;
+            CryptAES.CheckExeptionUnionKey(payLoad);
+            this.unionKeyIV = payLoad;
         }
 
         public byte[] ConvertToBytes()
         {
 
-            byte[] bytes = new byte[publicKey.Length + 1];
+            byte[] bytes = new byte[unionKeyIV.Length + 1];
 
             bytes[0] = (byte)type;
 
-            Array.Copy(publicKey, 0, bytes, 1, publicKey.Length);
+            Array.Copy(unionKeyIV, 0, bytes, 1, unionKeyIV.Length);
 
             return bytes;
         }
 
-        public static bool ParseToCom(byte[] buffer, out RsaPkeyCom? rsaPkeyCom)
+        public static bool ParseToCom(byte[] buffer, out AesKeyCom? aesKeyCom)
         {
             if (buffer == null || buffer.Length == 0)
                 throw new ArgumentNullException(nameof(buffer));
@@ -43,15 +42,15 @@ namespace ProtocolCryptographyD
             {
                 throw new ArgumentOutOfRangeException(nameof(typeData));
             }
-            if (typeData == TypeComAuth.RSAPKEY)
+            if (typeData == TypeComAuth.AESKEY)
             {
                 Array.Copy(buffer, 1, payLoad, 0, buffer.Length - 1);
-                rsaPkeyCom = new RsaPkeyCom(payLoad);
+                aesKeyCom = new AesKeyCom(payLoad);
                 return true;
             }
             else
             {
-                rsaPkeyCom = null;
+                aesKeyCom = null;
                 return false;
             }
         }

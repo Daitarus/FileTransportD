@@ -5,13 +5,13 @@ VisualStudioVersion = 17.2.32505.173
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Client", "Client\Client.csproj", "{34611C45-CD1D-4A9F-A6AD-E29D7CD291C6}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProtocolCryptographyD", "..\ProtocolCryptographyD\ProtocolCryptographyD.csproj", "{86BC28B2-8FCF-4AC6-B3B6-C7AED947DC38}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CryptL", "..\CryptL\CryptL.csproj", "{8C1871C7-491E-4FA7-B44E-33A9BEE26571}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CommandsKit", "..\CommandsKit\CommandsKit.csproj", "{1B23E1E6-FC2C-4FDD-B4D9-F6CACA90D6DD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleWorker", "..\ConsoleWorker\ConsoleWorker.csproj", "{A49A081C-2C67-428A-8424-25CAE7903113}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConsoleWorker", "..\ConsoleWorker\ConsoleWorker.csproj", "{A49A081C-2C67-428A-8424-25CAE7903113}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProtocolTransport", "..\ProtocolTransport\ProtocolTransport.csproj", "{73246962-BFD1-470F-93B4-B830D26C0C2C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -23,10 +23,6 @@ Global
 		{34611C45-CD1D-4A9F-A6AD-E29D7CD291C6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{34611C45-CD1D-4A9F-A6AD-E29D7CD291C6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{34611C45-CD1D-4A9F-A6AD-E29D7CD291C6}.Release|Any CPU.Build.0 = Release|Any CPU
-		{86BC28B2-8FCF-4AC6-B3B6-C7AED947DC38}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{86BC28B2-8FCF-4AC6-B3B6-C7AED947DC38}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{86BC28B2-8FCF-4AC6-B3B6-C7AED947DC38}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{86BC28B2-8FCF-4AC6-B3B6-C7AED947DC38}.Release|Any CPU.Build.0 = Release|Any CPU
 		{8C1871C7-491E-4FA7-B44E-33A9BEE26571}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{8C1871C7-491E-4FA7-B44E-33A9BEE26571}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8C1871C7-491E-4FA7-B44E-33A9BEE26571}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -39,6 +35,10 @@ Global
 		{A49A081C-2C67-428A-8424-25CAE7903113}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A49A081C-2C67-428A-8424-25CAE7903113}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A49A081C-2C67-428A-8424-25CAE7903113}.Release|Any CPU.Build.0 = Release|Any CPU
+		{73246962-BFD1-470F-93B4-B830D26C0C2C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{73246962-BFD1-470F-93B4-B830D26C0C2C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{73246962-BFD1-470F-93B4-B830D26C0C2C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{73246962-BFD1-470F-93B4-B830D26C0C2C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

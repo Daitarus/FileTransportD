@@ -1,12 +1,11 @@
 ﻿using System.Net.Sockets;
 
-namespace ProtocolCryptographyD
+namespace ProtocolTransport
 {
     public class Transport
     {
-        private int maxLengthPack = Command.MaxLengthData + 1;
+        private long maxLengthPack = Command.MaxLengthData + 1;
         private const int lengthArrayLengthPayload = 3;
-        private static long ALLLength = 0;
 
         private Socket socket;
 
@@ -18,9 +17,6 @@ namespace ProtocolCryptographyD
         public void SendData(byte[] payLoad)
         {
             payLoad = AddLength(payLoad);
-            ALLLength += payLoad.Length;
-            if(ALLLength == 2164260465)
-            { }
             socket.Send(payLoad);
         }
         public byte[] GetData()
@@ -47,7 +43,6 @@ namespace ProtocolCryptographyD
                 byteCounterOld = byteCounter;
             }
 
-            ALLLength += payLoad.Length;
             return payLoad;
         }
 

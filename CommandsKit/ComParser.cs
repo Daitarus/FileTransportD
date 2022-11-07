@@ -1,4 +1,4 @@
-﻿using ProtocolCryptographyD;
+﻿using ProtocolTransport;
 
 namespace CommandsKit
 {
@@ -56,11 +56,19 @@ namespace CommandsKit
                     {
                         return FileGetComA.BytesToCom(payload);
                     }
+                case TypeCommand.FILE_SEND_R:
+                    {
+                        return FileSendComR.BytesToCom(payload);
+                    }
+                case TypeCommand.FILE_SEND_A:
+                    {
+                        return FileSendComA.BytesToCom(payload);
+                    }
                 default:
                     {
                         return UnknowCom.BytesToCom(payload);
                     }
             }
-        }
+        }      
     }
 }

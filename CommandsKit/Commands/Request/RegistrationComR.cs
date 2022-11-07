@@ -1,9 +1,10 @@
-﻿using ProtocolCryptographyD;
+﻿using ProtocolTransport;
+using ServerRepository;
 using System.Text;
 
 namespace CommandsKit
 {
-    public class RegistrationComR : Command
+    public class RegistrationComR : CommandRequest
     {
         public readonly string login;
         public readonly byte[] hashAuthentication;
@@ -39,21 +40,29 @@ namespace CommandsKit
 
             return payload;
         }
-        public override bool ExecuteCommand(ref Transport transport, ref ClientInfo clientInfo)
+        public override void ExecuteCommand(Transport transport, ref ClientInfo clientInfo)
         {
-            bool answer = false;
+            RegistrationComA com = new RegistrationComA(false, clientInfo.sessionId);
+
             if (Enumerable.SequenceEqual(clientInfo.sessionId, sessionId))
             {
                 if (!clientInfo.authentication)
                 {
-                    answer = ExecuteRequest.Registration(login, hashAuthentication);
+                    RepositoryClient clientR = new RepositoryClient();
+                    Client? client = clientR.SelectForName(login);
+
+                    if (client == null)
+                    {
+                        client = new Client(hashAuthentication, login);
+                        clientR.Add(client);
+                        clientR.SaveChange();
+
+                        com = new RegistrationComA(true, clientInfo.sessionId);
+                    }
                 }
             }
-
-            RegistrationComA com = new RegistrationComA(answer, clientInfo.sessionId);
+           
             transport.SendData(clientInfo.aes.Encrypt(com.ToBytes()));
-
-            return answer;
         }
 
         public static RegistrationComR BytesToCom(byte[] payload)

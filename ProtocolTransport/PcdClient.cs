@@ -2,7 +2,7 @@
 using System.Net;
 using System.Net.Sockets;
 
-namespace ProtocolCryptographyD
+namespace ProtocolTransport
 {
     public class PcdClient
     {
@@ -62,32 +62,42 @@ namespace ProtocolCryptographyD
             }
         }
 
-        public bool ServeCommand(Command com)
+        public bool ServeCommand(CommandRequest comRequest)
         {
             try
             {
-                transport.SendData(clientInfo.aes.Encrypt(com.ToBytes()));
-                com = parser.Parse(clientInfo.aes.Decrypt(transport.GetData()));
-                return com.ExecuteCommand(ref transport, ref clientInfo);
+                transport.SendData(clientInfo.aes.Encrypt(comRequest.ToBytes()));               
+                Command com = parser.Parse(clientInfo.aes.Decrypt(transport.GetData()));
+                if (com is CommandAnswer)
+                {
+                    CommandAnswer comAnswer = (CommandAnswer)com;
+                    return comAnswer.ExecuteCommand();
+                }
             }
             catch (Exception e)
             {
                 Disconnect();
                 return false;
             }
+
+            return false;
         }
-        public bool ServeCommands(Command com)
+        public bool ServeCommands(CommandRequest comRequest)
         {
             try
             {
                 bool repeater = true;
 
-                transport.SendData(clientInfo.aes.Encrypt(com.ToBytes()));
+                transport.SendData(clientInfo.aes.Encrypt(comRequest.ToBytes()));
 
                 while (repeater)
                 {
-                    com = parser.Parse(clientInfo.aes.Decrypt(transport.GetData()));
-                    repeater = com.ExecuteCommand(ref transport, ref clientInfo);
+                    Command com = parser.Parse(clientInfo.aes.Decrypt(transport.GetData()));
+                    if (com is CommandAnswer)
+                    {
+                        CommandAnswer comAnswer = (CommandAnswer)com;
+                        repeater = comAnswer.ExecuteCommand();
+                    }
                 }
 
                 return true;
@@ -95,8 +105,9 @@ namespace ProtocolCryptographyD
             catch (Exception e)
             {
                 Disconnect();
-                return false;
             }
+
+            return false;
         }
 
         public bool Disconnect()

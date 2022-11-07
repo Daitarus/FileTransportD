@@ -1,4 +1,4 @@
-﻿using ProtocolCryptographyD;
+﻿using ProtocolTransport;
 
 namespace CommandsKit
 {
@@ -39,11 +39,6 @@ namespace CommandsKit
             payload[0] = typeCom;
 
             return payload;
-        }
-
-        public override bool ExecuteCommand(ref Transport transport, ref ClientInfo clientInfo)
-        {
-            return true;
         }
 
         public static UnknowCom BytesToCom(byte[] payload)

@@ -1,6 +1,6 @@
 ﻿using CryptL;
 
-namespace ProtocolCryptographyD
+namespace ProtocolTransport
 {
     internal class SessionIdCom
     {

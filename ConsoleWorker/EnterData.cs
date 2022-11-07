@@ -1,4 +1,5 @@
 ﻿using System.Net;
+using System.Text;
 
 namespace ConsoleWorker
 {
@@ -55,6 +56,7 @@ namespace ConsoleWorker
             }
             return message;
         }
+
         public static int EnterInt32Message(string request, string answer)
         {
             bool errorEnter = true;
@@ -103,10 +105,58 @@ namespace ConsoleWorker
             return com;
         }
 
+        public static string EnterSecureString()
+        {
+            StringBuilder message = new StringBuilder();
+            ConsoleKeyInfo keyInfo;
+
+            while (true)
+            {
+                keyInfo = Console.ReadKey(true);
+                if (keyInfo.Key == ConsoleKey.Enter)
+                {
+                    Console.WriteLine();
+                    break;
+                }
+                else if (keyInfo.Key == ConsoleKey.Backspace)
+                {
+                    if (message.Length != 0)
+                    {
+                        message.Remove(message.Length - 1, 1);
+                    }
+                }
+                else if (keyInfo.Key >= ConsoleKey.D0 && keyInfo.Key <= ConsoleKey.Z)
+                {
+                    message.Append(keyInfo.KeyChar);
+                }
+            }
+
+            return message.ToString();
+        }
+
+        public static string EnterNotNullMessageSecure(string request, string answer)
+        {
+            bool errorEnter = true;
+            string message = "";
+
+            while (errorEnter)
+            {
+                PrintMessage.PrintColorMessage(request, ConsoleColor.White);
+                message = EnterSecureString(); ;
+
+                errorEnter = (message == null || message.Length == 0);
+                if (errorEnter)
+                {
+                    PrintMessage.PrintColorMessage(String.Format("{0}\n", answer), ConsoleColor.Red);
+                }
+            }
+            return message;
+        }
+
         public static void EnterAuthorization(out string login, out string password)
         {
             login = EnterNotNullMessage("Please, enter your login: ", "Error: Login is empty!");
-            password = EnterNotNullMessage("Please, enter your password: ", "Error: Password is empty!");
+            password = EnterNotNullMessageSecure("Please, enter your password: ", "Error: Password is empty!");
         }
     }
 }
