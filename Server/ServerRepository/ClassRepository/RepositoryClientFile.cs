@@ -6,12 +6,12 @@ namespace ServerRepository
     {
         public RepositoryClientFile() : base(new ServerDB()) { }
 
-        public List<int> IdFileForClient(int idClient)
+        public List<uint> IdFileForClient(uint idClient)
         {
             ServerDB serverDB = (ServerDB)db;
 ;            IQueryable<Client_File> clientFileCollection = serverDB.FilesAttach.Where(clientFile => clientFile.Id_Client.Equals(idClient));
 
-            List<int> allIdFile = new List<int>();
+            List<uint> allIdFile = new List<uint>();
 
             if (clientFileCollection.Count() > 0)
             {

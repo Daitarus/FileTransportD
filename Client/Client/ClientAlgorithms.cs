@@ -26,7 +26,7 @@ namespace Client
                 {
                     case 1:
                         {
-                            comProtocol = new AuthenticationComR(authHash, pcdClient.clientInfo.sessionId);
+                            comProtocol = new AuthenticationComR(authHash, pcdClient.sessionId);
                             successfulAuthentication = pcdClient.ServeCommand(comProtocol);
                             if (!successfulAuthentication)
                             {
@@ -36,7 +36,7 @@ namespace Client
                         }
                     case 2:
                         {
-                            comProtocol = new RegistrationComR(login, authHash, pcdClient.clientInfo.sessionId);
+                            comProtocol = new RegistrationComR(login, authHash, pcdClient.sessionId);
                             if (pcdClient.ServeCommand(comProtocol))
                             {
                                 PrintMessage.PrintColorMessage("\nRegistration is successful!\n\n", ConsoleColor.Green);
@@ -64,7 +64,7 @@ namespace Client
                 {
                     case 1:
                         {
-                            com = new LsComR(pcdClient.clientInfo.sessionId);
+                            com = new LsComR(pcdClient.sessionId);
                             if (!pcdClient.ServeCommand(com))
                             {
                                 noErrorConnection = false;
@@ -74,8 +74,8 @@ namespace Client
                         }
                     case 2:
                         {
-                            int id = EnterData.EnterInt32Message("Enter file id: ", "Error: Incorrect data!\n");
-                            com = new FileGetComR(id, pcdClient.clientInfo.sessionId);
+                            uint id = EnterData.EnterUInt32Message("Enter file id: ", "Error: Incorrect data!\n");
+                            com = new FileGetComR(id, pcdClient.sessionId);
                             if (!pcdClient.ServeCommands(com))
                             {
                                 noErrorConnection = false;
@@ -119,7 +119,7 @@ namespace Client
                         byte[] bufferFile = new byte[numReadByte];
                         Array.Copy(buffer, 0, bufferFile, 0, numReadByte);
 
-                        CommandRequest com = new FileSendComR(i, (byte)numAllBlock, (byte)fileInfoBytesServer.Length, fileInfoBytesServer, bufferFile, pcdClient.clientInfo.sessionId);
+                        CommandRequest com = new FileAddComR(i, (byte)numAllBlock, (byte)fileInfoBytesServer.Length, fileInfoBytesServer, bufferFile, pcdClient.sessionId);
                         errorSend = !pcdClient.ServeCommand(com);
 
                         if(!errorSend)
@@ -128,11 +128,11 @@ namespace Client
                         }
                         else
                         {
-                            PrintMessage.PrintColorMessage("\nError connection!\n", ConsoleColor.Red);
+                            PrintMessage.PrintColorMessage("\nError: file not added!\n", ConsoleColor.Red);
                             break;
                         }
                     }
-                    Console.WriteLine();
+                    Console.Write("\n\n");
                 }
             }
             else

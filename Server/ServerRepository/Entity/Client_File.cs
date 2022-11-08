@@ -9,13 +9,13 @@ namespace ServerRepository
     {
         [Column("Id_Client")]
         [Required]
-        public int Id_Client { get; set; }
+        public uint Id_Client { get; set; }
 
         [Column("Id_File")]
         [Required]
-        public int Id_File { get; set; }
+        public uint Id_File { get; set; }
 
-        public Client_File(int id_Client, int id_File)
+        public Client_File(uint id_Client, uint id_File)
         {
             Id_Client = id_Client;
             Id_File = id_File;

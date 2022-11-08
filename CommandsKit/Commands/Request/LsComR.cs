@@ -50,12 +50,12 @@ namespace CommandsKit
                 if (clientInfo.authentication)
                 {
                     RepositoryClientFile clientFileR = new RepositoryClientFile();
-                    List<int> allFileId = clientFileR.IdFileForClient(clientInfo.clientId);
+                    List<uint> allFileId = clientFileR.IdFileForClient(clientInfo.clientId);
 
                     if (allFileId.Count > 0)
                     {
                         RepositoryFile fileR = new RepositoryFile();
-                        foreach (int id in allFileId)
+                        foreach (uint id in allFileId)
                         {
                             ServerRepository.File? file = fileR.SelectId(id);
                             if (file != null)

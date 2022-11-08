@@ -1,23 +1,24 @@
 ﻿using CryptL;
 using System.Net;
 using System.Net.Sockets;
+using NLog;
 
 namespace ProtocolTransport
 {
     public class PcdClient
     {
-        private IPEndPoint serverEndPoint;
-        private Socket socket;
-        private Transport transport;
-        private IParser parser;
+        private static readonly Logger logger = LogManager.GetCurrentClassLogger();
 
-        public ClientInfo clientInfo = new ClientInfo();
+        private IPEndPoint serverEndPoint;
+        private Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+        private IParser parser;
+        private CryptAES aes = new CryptAES();
+        private Transport? transport;
+        public byte[] sessionId = new byte[0];
 
         public PcdClient(IPEndPoint serverEndPoint, IParser parser)
         {
-            this.serverEndPoint = serverEndPoint;
-
-            socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);            
+            this.serverEndPoint = serverEndPoint;         
             this.parser = parser;
         }
 
@@ -26,48 +27,45 @@ namespace ProtocolTransport
             try
             {
                 socket.Connect(serverEndPoint);
-
-                clientInfo.timeConnection = DateTime.Now;
-                clientInfo.endPoint = (IPEndPoint)socket.LocalEndPoint;
-                clientInfo.aes = new CryptAES();
-
                 transport = new Transport(socket);
 
                 //get PublicKey RSA
                 RsaPkeyCom rsaCom;
-                if (RsaPkeyCom.ParseToCom(transport.GetData(), out rsaCom)) 
+                if (RsaPkeyCom.ParseToCom(transport.GetData(), out rsaCom))
                 {
                     CryptRSA rsa = new CryptRSA(rsaCom.publicKey, false);
 
                     //send aes key
-                    AesKeyCom aesKeyCom = new AesKeyCom(clientInfo.aes.UnionKeyIV());
+                    AesKeyCom aesKeyCom = new AesKeyCom(aes.UnionKeyIV());
                     transport.SendData(rsa.Encrypt(aesKeyCom.ConvertToBytes()));
 
                     //get sessionId
                     SessionIdCom sessionIdCom;
-                    if(SessionIdCom.ParseToCom(clientInfo.aes.Decrypt(transport.GetData()), out sessionIdCom))
+                    if (SessionIdCom.ParseToCom(aes.Decrypt(transport.GetData()), out sessionIdCom))
                     {
-                        clientInfo.sessionId = sessionIdCom.sessionId;
-
+                        sessionId = sessionIdCom.sessionId;
                         return true;
                     }
                 }
-
-                return false;
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 Disconnect();
-                return false;
+                LogException(e);
             }
+
+            return false;
         }
 
         public bool ServeCommand(CommandRequest comRequest)
         {
             try
             {
-                transport.SendData(clientInfo.aes.Encrypt(comRequest.ToBytes()));               
-                Command com = parser.Parse(clientInfo.aes.Decrypt(transport.GetData()));
+                if (transport == null)
+                    throw new Exception("PcdClient is not connection");
+
+                transport.SendData(aes.Encrypt(comRequest.ToBytes()));               
+                Command com = parser.Parse(aes.Decrypt(transport.GetData()));
                 if (com is CommandAnswer)
                 {
                     CommandAnswer comAnswer = (CommandAnswer)com;
@@ -77,21 +75,25 @@ namespace ProtocolTransport
             catch (Exception e)
             {
                 Disconnect();
+                LogException(e);
             }
 
             return false;
         }
         public bool ServeCommands(CommandRequest comRequest)
         {
+
             try
             {
+                if (transport == null)
+                    throw new Exception("PcdClient is not connection");
+
+                transport.SendData(aes.Encrypt(comRequest.ToBytes()));
+
                 bool repeater = true;
-
-                transport.SendData(clientInfo.aes.Encrypt(comRequest.ToBytes()));
-
                 while (repeater)
                 {
-                    Command com = parser.Parse(clientInfo.aes.Decrypt(transport.GetData()));
+                    Command com = parser.Parse(aes.Decrypt(transport.GetData()));
                     if (com is CommandAnswer)
                     {
                         CommandAnswer comAnswer = (CommandAnswer)com;
@@ -104,23 +106,28 @@ namespace ProtocolTransport
             catch (Exception e)
             {
                 Disconnect();
+                LogException(e);
             }
 
             return false;
         }
 
-        public bool Disconnect()
+        public void Disconnect()
         {
             try
             {
                 socket.Disconnect(false);
                 socket.Close();
-                return true;
             }
             catch (Exception e)
             {
-                return false;
+                LogException(e);
             }
+        }
+
+        private void LogException(Exception e)
+        {
+            logger.Error(String.Format("{0}\n\n{1}\n\n", e.Message, e.StackTrace));
         }
     }
 }

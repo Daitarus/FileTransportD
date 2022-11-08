@@ -13,7 +13,9 @@ namespace Server
         {
             bool flagStartServer = false;
             string connectionString = ConfigurationManager.AppSettings["connectionString"];
-            if(connectionString != null)
+            FileAddComR.directory = @"C:\Users\User\Desktop\DataServer\";
+
+            if (connectionString != null)
             {
                 ServerDB.ConnectionString = connectionString;
                 if(ServerDB.CheckDB())
@@ -21,6 +23,7 @@ namespace Server
                     flagStartServer = true;
                 }
             }
+
             if (flagStartServer)
             {
                 IPEndPoint serverEndPoint = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 5000);

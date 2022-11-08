@@ -11,7 +11,7 @@
         LS_A = 6,
         FILE_GET_R = 7,
         FILE_GET_A = 8,
-        FILE_SEND_R = 9,
-        FILE_SEND_A = 10
+        FILE_ADD_R = 9,
+        FILE_ADD_A = 10
     }
 }

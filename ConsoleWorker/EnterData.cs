@@ -75,6 +75,24 @@ namespace ConsoleWorker
 
             return message;
         }
+        public static uint EnterUInt32Message(string request, string answer)
+        {
+            bool errorEnter = true;
+            uint message = 0;
+
+            while (errorEnter)
+            {
+                PrintMessage.PrintColorMessage(request, ConsoleColor.White);
+                errorEnter = !uint.TryParse(Console.ReadLine(), out message);
+
+                if (errorEnter)
+                {
+                    PrintMessage.PrintColorMessage(String.Format("{0}\n", answer), ConsoleColor.Red);
+                }
+            }
+
+            return message;
+        }
 
         public static int EnterNumAction(string[] comStr)
         {

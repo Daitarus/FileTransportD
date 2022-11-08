@@ -2,18 +2,18 @@
 
 namespace CommandsKit
 {
-    public class FileSendComA : CommandAnswer
+    public class FileAddComA : CommandAnswer
     {
         public readonly bool answer;
 
-        public FileSendComA(bool answer, byte[] sessionId)
+        public FileAddComA(bool answer, byte[] sessionId)
         {
             if (sessionId == null)
                 throw new ArgumentNullException(nameof(sessionId));
             if (sessionId.Length != LengthHash)
                 throw new ArgumentOutOfRangeException($"{nameof(sessionId)} size must be {LengthHash}");
 
-            typeCom = (byte)TypeCommand.FILE_SEND_A;
+            typeCom = (byte)TypeCommand.FILE_ADD_A;
             this.answer = answer;
             this.sessionId = sessionId;
         }
@@ -34,7 +34,7 @@ namespace CommandsKit
             return answer;
         }
 
-        public static FileSendComA BytesToCom(byte[] payload)
+        public static FileAddComA BytesToCom(byte[] payload)
         {
             if (payload == null)
                 throw new ArgumentNullException(nameof(payload));
@@ -46,7 +46,7 @@ namespace CommandsKit
 
             bool answer = BitConverter.ToBoolean(payload, 0);
 
-            return new FileSendComA(answer, sessionId);
+            return new FileAddComA(answer, sessionId);
         }
     }
 }

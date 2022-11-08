@@ -46,6 +46,8 @@ namespace CommandsKit
                 throw new ArgumentOutOfRangeException($"{nameof(fileInfo)} size must be {lengthInfo}");
             if (sessionId.Length != LengthHash)
                 throw new ArgumentOutOfRangeException($"{nameof(sessionId)} size must be {LengthHash}");
+            if (allBlock < 1)
+                throw new ArgumentException($"{nameof(allBlock)} must be more {1}");
 
             typeCom = (byte)TypeCommand.FILE_GET_A;
             this.numBlock = numBlock;

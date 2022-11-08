@@ -6,9 +6,9 @@ namespace CommandsKit
 {
     public class FileGetComR : CommandRequest
     {
-        public readonly int fileId;
+        public readonly uint fileId;
 
-        public FileGetComR(int fileId, byte[] sessionId)
+        public FileGetComR(uint fileId, byte[] sessionId)
         {
             if (sessionId == null)
                 throw new ArgumentNullException(nameof(sessionId));
@@ -43,9 +43,9 @@ namespace CommandsKit
                 if (clientInfo.authentication)
                 {
                     RepositoryClientFile clientFileR = new RepositoryClientFile();
-                    List<int> filesId = clientFileR.IdFileForClient(clientInfo.clientId);
+                    List<uint> filesId = clientFileR.IdFileForClient(clientInfo.clientId);
 
-                    foreach (int id in filesId)
+                    foreach (uint id in filesId)
                     {
                         if (id == fileId)
                         {
@@ -113,7 +113,7 @@ namespace CommandsKit
             {
                 Array.Reverse(fileIdBytes);
             }
-            int fileId = BitConverter.ToInt32(fileIdBytes, 0);
+            uint fileId = BitConverter.ToUInt32(fileIdBytes, 0);
             return new FileGetComR(fileId, sessionId);
         }
     }

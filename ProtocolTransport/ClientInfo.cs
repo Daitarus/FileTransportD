@@ -1,21 +1,25 @@
 ﻿using System.Net;
-using System.Text;
 using CryptL;
 
 namespace ProtocolTransport
 {
     public class ClientInfo
     {
-        public IPEndPoint endPoint;
-        public DateTime timeConnection;
-        public CryptAES aes;
-        public byte[] sessionId;
-        public bool authentication;
-        public int clientId;
+        public readonly IPEndPoint endPoint;
+        public readonly DateTime timeConnection;
+        public readonly CryptAES aes;
+        public readonly byte[] sessionId;
 
-        public override string ToString()
+        public DateTime timeDisconnection;
+        public bool authentication;
+        public uint clientId;
+
+        public ClientInfo(IPEndPoint endPoint, DateTime timeConnection, CryptAES aes, byte[] sessionId)
         {
-            return String.Format("{0}:{1} - {2}", endPoint.Address.ToString(), endPoint.Port.ToString(), Convert.ToBase64String(sessionId));
+            this.endPoint = endPoint;
+            this.timeConnection = timeConnection;
+            this.aes = aes;
+            this.sessionId = sessionId;
         }
     }
 }

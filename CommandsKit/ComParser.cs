@@ -12,13 +12,13 @@ namespace CommandsKit
             TypeCommand typeData;
             byte[] payload = new byte[buffer.Length - 1];
 
-            try
+            if (Enum.IsDefined(typeof(TypeCommand), buffer[0]))
             {
                 typeData = (TypeCommand)buffer[0];
             }
-            catch
+            else
             {
-                throw new ArgumentOutOfRangeException(nameof(typeData));
+                typeData = TypeCommand.UNKNOW;
             }
             Array.Copy(buffer, 1, payload, 0, buffer.Length - 1);
 
@@ -56,13 +56,13 @@ namespace CommandsKit
                     {
                         return FileGetComA.BytesToCom(payload);
                     }
-                case TypeCommand.FILE_SEND_R:
+                case TypeCommand.FILE_ADD_R:
                     {
-                        return FileSendComR.BytesToCom(payload);
+                        return FileAddComR.BytesToCom(payload);
                     }
-                case TypeCommand.FILE_SEND_A:
+                case TypeCommand.FILE_ADD_A:
                     {
-                        return FileSendComA.BytesToCom(payload);
+                        return FileAddComA.BytesToCom(payload);
                     }
                 default:
                     {
