@@ -7,6 +7,26 @@ namespace CommandsKit
     public class FileGetComA : CommandAnswer
     {
         public static long MaxLength_Info_Block { get { return MaxLengthData - LengthHash - 4; } }
+        private static string path = "";
+        public static string Path
+        {
+            set
+            {
+                if (value != null && value.Length > 0)
+                {
+                    if (value.Length - 1 != '\\')
+                    {
+                        value += '\\';
+                    }
+                    path = value;
+                }
+                else
+                {
+                    path = "";
+                }
+            }
+            get { return path; }
+        }
 
         public readonly byte numBlock;
         public readonly byte allBlock;
@@ -53,8 +73,14 @@ namespace CommandsKit
         }
         public override bool ExecuteCommand()
         {
-            string fileInfoStr = Encoding.UTF8.GetString(this.fileInfo);
-            FileInfo fileInfo = new FileInfo(fileInfoStr);
+            StringBuilder fileInfoStr = new StringBuilder(path);
+            fileInfoStr.Append(Encoding.UTF8.GetString(this.fileInfo));
+            FileInfo fileInfo = new FileInfo(fileInfoStr.ToString());
+
+            if(!fileInfo.Directory.Exists)
+            {
+                fileInfo.Directory.Create();
+            }
 
             FileMode fmode = FileMode.Append;
             if (numBlock == 0)
@@ -67,8 +93,7 @@ namespace CommandsKit
                 fstream.Write(fileBlock);
             }
 
-            string outStr = String.Format("Download \"{0}\"", fileInfoStr);
-            PrintMessage.PrintColorMessage(CreatorOutString.GetLoadString(outStr, numBlock, allBlock), ConsoleColor.White);
+            PrintMessage.PrintColorMessage(CreatorOutString.GetLoadString(String.Format("Download \"{0}\"", fileInfoStr), numBlock, allBlock), ConsoleColor.White);
             if (numBlock + 1 == allBlock)
             {
                 Console.WriteLine();

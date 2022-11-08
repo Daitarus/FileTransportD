@@ -13,6 +13,7 @@ namespace CommandsKit
             if (sessionId.Length != LengthHash)
                 throw new ArgumentOutOfRangeException($"{nameof(sessionId)} size must be {LengthHash}");
 
+            typeCom = (byte)TypeCommand.FILE_SEND_A;
             this.answer = answer;
             this.sessionId = sessionId;
         }

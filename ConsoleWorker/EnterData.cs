@@ -48,7 +48,7 @@ namespace ConsoleWorker
                 PrintMessage.PrintColorMessage(request, ConsoleColor.White);
                 message = Console.ReadLine();
 
-                errorEnter = (message == null);
+                errorEnter = ((message == null) || (message == ""));
                 if (errorEnter)
                 {
                     PrintMessage.PrintColorMessage(String.Format("{0}\n", answer), ConsoleColor.Red);
@@ -157,6 +157,24 @@ namespace ConsoleWorker
         {
             login = EnterNotNullMessage("Please, enter your login: ", "Error: Login is empty!");
             password = EnterNotNullMessageSecure("Please, enter your password: ", "Error: Password is empty!");
+        }
+
+        public static FileInfo ChooseFile(string request, string answer)
+        {
+            bool errorEnter = true;
+            FileInfo fileInfo = new FileInfo("default");
+
+            while (errorEnter)
+            {
+                string fileInfoStr = EnterNotNullMessage(request, "Error: File name is empty ");
+                fileInfo = new FileInfo(fileInfoStr);
+                errorEnter = (!fileInfo.Exists);
+                if (errorEnter)
+                {
+                    PrintMessage.PrintColorMessage(String.Format("{0}\n", answer), ConsoleColor.Red);
+                }
+            }
+            return fileInfo;
         }
     }
 }

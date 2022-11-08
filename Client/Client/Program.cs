@@ -18,7 +18,7 @@ namespace Client
             {
                 PrintMessage.PrintColorMessage("Connection!\n\n", ConsoleColor.Cyan);
                 ClientAlgorithms.AuthorizationAlg(pcdClient);
-                ClientAlgorithms.ActionAlg(pcdClient);
+                ClientAlgorithms.MainAlg(pcdClient);
             }
             else
             {

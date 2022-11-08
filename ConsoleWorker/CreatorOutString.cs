@@ -18,11 +18,11 @@ namespace ConsoleWorker
 
             for (int i = 0; i < numLoadChar; i++)
             {
-                loadStr.Append('I');
+                loadStr.Append('=');
             }
             for (int i = numLoadChar; i < numAllChar; i++)
             {
-                loadStr.Append('_');
+                loadStr.Append(' ');
             }
 
             loadStr.Append(String.Format("] - {0}/{1}", num, all));

@@ -77,7 +77,6 @@ namespace ProtocolTransport
             catch (Exception e)
             {
                 Disconnect();
-                return false;
             }
 
             return false;

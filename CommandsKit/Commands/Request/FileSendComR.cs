@@ -1,12 +1,14 @@
 ﻿using ConsoleWorker;
 using ProtocolTransport;
 using System.Text;
+using ServerRepository;
 
 namespace CommandsKit
 {
     public class FileSendComR : CommandRequest
     {
         public static long MaxLength_Info_Block { get { return MaxLengthData - LengthHash - 4; } }
+        public static string path = @"C:\Users\User\Desktop\DataServer\";
 
         public readonly byte numBlock;
         public readonly byte allBlock;
@@ -27,7 +29,7 @@ namespace CommandsKit
             if (sessionId.Length != LengthHash)
                 throw new ArgumentOutOfRangeException($"{nameof(sessionId)} size must be {LengthHash}");
 
-            typeCom = (byte)TypeCommand.FILE_GET_A;
+            typeCom = (byte)TypeCommand.FILE_SEND_R;
             this.numBlock = numBlock;
             this.allBlock = allBlock;
             this.lengthInfo = lengthInfo;
@@ -59,7 +61,14 @@ namespace CommandsKit
             {
                 if (clientInfo.authentication)
                 {
-                    FileInfo fileInfo = new FileInfo(Encoding.UTF8.GetString(this.fileInfo));
+                    StringBuilder fileInfoStr = new StringBuilder(path);
+                    fileInfoStr.Append(Encoding.UTF8.GetString(this.fileInfo));
+                    FileInfo fileInfo = new FileInfo(fileInfoStr.ToString());
+
+                    if(!fileInfo.Directory.Exists)
+                    {
+                        fileInfo.Directory.Create();
+                    }
 
                     FileMode fmode = FileMode.Append;
                     if (numBlock == 0)
@@ -73,6 +82,20 @@ namespace CommandsKit
                     }
 
                     com = new FileSendComA(true, sessionId);
+
+                    if(numBlock + 1 == allBlock)
+                    {
+                        RepositoryFile fileR = new RepositoryFile();
+                        ServerRepository.File file = new ServerRepository.File(fileInfo.Name, Encoding.UTF8.GetString(this.fileInfo), fileInfo.FullName);
+                        fileR.Add(file);
+                        fileR.SaveChange();
+                        file = fileR.GetToPath(file.Path);
+
+                        RepositoryClientFile clientFileR = new RepositoryClientFile();
+                        Client_File clientFile = new Client_File(clientInfo.clientId, file.Id);
+                        clientFileR.Add(clientFile);
+                        clientFileR.SaveChange();
+                    }
                 }
             }
 

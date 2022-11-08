@@ -82,6 +82,10 @@ namespace ProtocolTransport
                             CommandRequest comRequest = (CommandRequest)com;
                             comRequest.ExecuteCommand(transport, ref clientInfo);
                         }
+                        else
+                        {
+                            break;
+                        }
                     }
                 }
 
