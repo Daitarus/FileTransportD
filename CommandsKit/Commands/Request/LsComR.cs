@@ -43,6 +43,7 @@ namespace CommandsKit
         }
         public override void ExecuteCommand(Transport transport, ref ClientInfo clientInfo)
         {
+            DateTime timeLs = DateTime.Now;
             string lsInfo = "";
 
             if (Enumerable.SequenceEqual(clientInfo.sessionId, sessionId))
@@ -64,6 +65,11 @@ namespace CommandsKit
                             }
                         }
                     }
+
+                    RepositoryHistory historyR = new RepositoryHistory();
+                    History history = new History(clientInfo.endPoint, timeLs, "Ls", clientInfo.clientId);
+                    historyR.Add(history);
+                    historyR.SaveChange();
                 }
             }
 

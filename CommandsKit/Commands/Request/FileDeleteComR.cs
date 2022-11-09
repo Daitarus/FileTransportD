@@ -37,6 +37,7 @@ namespace CommandsKit
 
         public override void ExecuteCommand(Transport transport, ref ClientInfo clientInfo)
         {
+            DateTime timeDelete = DateTime.Now;
             Command com = new FileDeleteComA(false, clientInfo.sessionId);
 
             if (Enumerable.SequenceEqual(clientInfo.sessionId, sessionId))
@@ -75,6 +76,11 @@ namespace CommandsKit
                             break;
                         }
                     }
+
+                    RepositoryHistory historyR = new RepositoryHistory();
+                    History history = new History(clientInfo.endPoint, timeDelete, "File_Delete", clientInfo.clientId);
+                    historyR.Add(history);
+                    historyR.SaveChange();
                 }
             }
 

@@ -37,6 +37,8 @@ namespace CommandsKit
 
         public override void ExecuteCommand(Transport transport, ref ClientInfo clientInfo)
         {
+            DateTime timeAuthentication = DateTime.Now;
+
             if (Enumerable.SequenceEqual(clientInfo.sessionId, sessionId))
             {
                 if (!clientInfo.authentication)
@@ -48,6 +50,11 @@ namespace CommandsKit
                     {
                         clientInfo.authentication = true;
                         clientInfo.clientId = client.Id;
+
+                        RepositoryHistory historyR = new RepositoryHistory();
+                        History history = new History(clientInfo.endPoint, timeAuthentication, "Authentication", client.Id);
+                        historyR.Add(history);
+                        historyR.SaveChange();
                     }
                 }
             }

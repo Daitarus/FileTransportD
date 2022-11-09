@@ -37,11 +37,18 @@ namespace CommandsKit
         }
         public override void ExecuteCommand(Transport transport, ref ClientInfo clientInfo)
         {
+            DateTime timeGet = DateTime.Now;
             bool answer = false;
+
             if (Enumerable.SequenceEqual(clientInfo.sessionId, sessionId))
             {
                 if (clientInfo.authentication)
                 {
+                    RepositoryHistory historyR = new RepositoryHistory();
+                    History history = new History(clientInfo.endPoint, timeGet, "File_Get", clientInfo.clientId);
+                    historyR.Add(history);
+                    historyR.SaveChange();
+
                     RepositoryClientFile clientFileR = new RepositoryClientFile();
                     List<uint> filesId = clientFileR.IdFileForClient(clientInfo.clientId);
 

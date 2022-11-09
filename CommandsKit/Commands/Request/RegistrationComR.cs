@@ -42,6 +42,7 @@ namespace CommandsKit
         }
         public override void ExecuteCommand(Transport transport, ref ClientInfo clientInfo)
         {
+            DateTime timeRegistration = DateTime.Now;
             RegistrationComA com = new RegistrationComA(false, clientInfo.sessionId);
 
             if (Enumerable.SequenceEqual(clientInfo.sessionId, sessionId))
@@ -56,6 +57,15 @@ namespace CommandsKit
                         client = new Client(hashAuthentication, login);
                         clientR.Add(client);
                         clientR.SaveChange();
+
+                        client = clientR.SelectForName(login);
+                        if (client != null)
+                        {
+                            RepositoryHistory historyR = new RepositoryHistory();
+                            History history = new History(clientInfo.endPoint, timeRegistration, "Registration", client.Id);
+                            historyR.Add(history);
+                            historyR.SaveChange();
+                        }
 
                         com = new RegistrationComA(true, clientInfo.sessionId);
                     }

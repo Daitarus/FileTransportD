@@ -1,16 +1,20 @@
 ﻿using RepositoryDB;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Net;
 
 namespace ServerRepository
 {
     [Table("Histories")]
     public class History : Entity
     {
-        [Column("Address")]
-        [MaxLength(22)]
+        [Column("Ip")]
         [Required]
-        public string Address { get; set; }
+        public IPAddress Ip { get; set; }
+
+        [Column("Port")]
+        [Required]
+        public int Port { get; set; }
 
         [Column("Time")]
         [Required]
@@ -22,13 +26,21 @@ namespace ServerRepository
 
         [Column("Id_Client")]
         [Required]
-        public int Id_Client { get; set; }
+        public uint Id_Client { get; set; }
 
 
-
-        public History(string address, DateTime time, string action, int id_Client)
+        public History(IPAddress ip, int port, DateTime time, string action, uint id_Client)
         {
-            Address = address;
+            Ip = ip;
+            Port = port;
+            Time = time.ToUniversalTime();
+            Action = action;
+            Id_Client = id_Client;
+        }
+        public History(IPEndPoint endPoint, DateTime time, string action, uint id_Client)
+        {
+            Ip = endPoint.Address;
+            Port = endPoint.Port;
             Time = time.ToUniversalTime();
             Action = action;
             Id_Client = id_Client;

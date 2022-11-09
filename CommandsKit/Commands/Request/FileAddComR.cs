@@ -77,12 +77,28 @@ namespace CommandsKit
         }
         public override void ExecuteCommand(Transport transport, ref ClientInfo clientInfo)
         {
+            DateTime timeAdd = DateTime.Now;
             Command com = new FileAddComA(false, sessionId);
 
             if (Enumerable.SequenceEqual(clientInfo.sessionId, sessionId))
             {
                 if (clientInfo.authentication)
                 {
+                    if(numBlock == 0)
+                    {
+                        RepositoryHistory historyR = new RepositoryHistory();
+                        History history = new History(clientInfo.endPoint, timeAdd, "File_Add_Begin", clientInfo.clientId);
+                        historyR.Add(history);
+                        historyR.SaveChange();
+                    }
+                    if (numBlock + 1 == allBlock)
+                    {
+                        RepositoryHistory historyR = new RepositoryHistory();
+                        History history = new History(clientInfo.endPoint, timeAdd, "File_Add_end", clientInfo.clientId);
+                        historyR.Add(history);
+                        historyR.SaveChange();
+                    }
+
                     string fileInfoStr = Encoding.UTF8.GetString(this.fileInfo);
                     RepositoryFile fileR = new RepositoryFile();
                     ServerRepository.File file = fileR.GetToPath(fileInfoStr);
