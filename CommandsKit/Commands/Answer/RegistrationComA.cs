@@ -1,4 +1,5 @@
-﻿using ProtocolTransport;
+﻿using ConsoleWorker;
+using ProtocolTransport;
 
 namespace CommandsKit
 {

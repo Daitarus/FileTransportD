@@ -12,6 +12,8 @@
         FILE_GET_R = 7,
         FILE_GET_A = 8,
         FILE_ADD_R = 9,
-        FILE_ADD_A = 10
+        FILE_ADD_A = 10,
+        FILE_DELETE_R = 11,
+        FILE_DELETE_A = 12
     }
 }

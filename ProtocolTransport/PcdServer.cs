@@ -109,7 +109,7 @@ namespace ProtocolTransport
 
         private void LogException(Exception e)
         {
-            logger.Error(String.Format("{0}\n\n{1}\n\n", e.Message, e.StackTrace));
+            logger.Error(String.Format("{0}\n{1}\n\n", e.Message, e.StackTrace));
         }
 
         private byte[] GenerateSessionId(IPEndPoint clientEndPoint, DateTime dateConnection)

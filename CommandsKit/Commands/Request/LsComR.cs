@@ -60,7 +60,7 @@ namespace CommandsKit
                             ServerRepository.File? file = fileR.SelectId(id);
                             if (file != null)
                             {
-                                lsInfo += String.Format("Id:{0} Path:{1}\n", file.Id, file.Path);
+                                lsInfo += String.Format("Id:{0} Directory:{1}\n", file.Id, file.Path);
                             }
                         }
                     }

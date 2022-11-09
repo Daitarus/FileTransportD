@@ -8,6 +8,25 @@ namespace CommandsKit
     {
         public static long MaxLength_Info_Block { get { return MaxLengthData - LengthHash - 4; } }
         public static string directory = "";
+        public static string Directory
+        {
+            set
+            {
+                if (value != null && value.Length > 0)
+                {
+                    if (value.Length - 1 != '\\')
+                    {
+                        value += '\\';
+                    }
+                    directory = value;
+                }
+                else
+                {
+                    directory = "";
+                }
+            }
+            get { return directory; }
+        }
 
         public readonly byte numBlock;
         public readonly byte allBlock;
@@ -29,6 +48,8 @@ namespace CommandsKit
                 throw new ArgumentOutOfRangeException($"{nameof(sessionId)} size must be {LengthHash}");
             if (allBlock < 1)
                 throw new ArgumentException($"{nameof(allBlock)} must be more {1}");
+            if (numBlock >= allBlock)
+                throw new ArgumentException($"{nameof(numBlock)} must be less {allBlock}");
 
             typeCom = (byte)TypeCommand.FILE_ADD_R;
             this.numBlock = numBlock;

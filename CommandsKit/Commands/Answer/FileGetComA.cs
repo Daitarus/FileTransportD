@@ -7,8 +7,8 @@ namespace CommandsKit
     public class FileGetComA : CommandAnswer
     {
         public static long MaxLength_Info_Block { get { return MaxLengthData - LengthHash - 4; } }
-        private static string path = "";
-        public static string Path
+        private static string directory = "";
+        public static string Directory
         {
             set
             {
@@ -18,14 +18,14 @@ namespace CommandsKit
                     {
                         value += '\\';
                     }
-                    path = value;
+                    directory = value;
                 }
                 else
                 {
-                    path = "";
+                    directory = "";
                 }
             }
-            get { return path; }
+            get { return directory; }
         }
 
         public readonly byte numBlock;
@@ -48,6 +48,8 @@ namespace CommandsKit
                 throw new ArgumentOutOfRangeException($"{nameof(sessionId)} size must be {LengthHash}");
             if (allBlock < 1)
                 throw new ArgumentException($"{nameof(allBlock)} must be more {1}");
+            if(numBlock >= allBlock)
+                throw new ArgumentException($"{nameof(numBlock)} must be less {allBlock}");
 
             typeCom = (byte)TypeCommand.FILE_GET_A;
             this.numBlock = numBlock;
@@ -75,7 +77,7 @@ namespace CommandsKit
         }
         public override bool ExecuteCommand()
         {
-            StringBuilder fileInfoStr = new StringBuilder(path);
+            StringBuilder fileInfoStr = new StringBuilder(directory);
             fileInfoStr.Append(Encoding.UTF8.GetString(this.fileInfo));
             FileInfo fileInfo = new FileInfo(fileInfoStr.ToString());
 

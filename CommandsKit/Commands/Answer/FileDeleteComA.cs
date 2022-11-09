@@ -1,21 +1,21 @@
-﻿using ConsoleWorker;
-using ProtocolTransport;
+﻿using ProtocolTransport;
+using ConsoleWorker;
 
 namespace CommandsKit
 {
-    public class AuthenticationComA : CommandAnswer
+    public class FileDeleteComA : CommandAnswer
     {
         public readonly bool answer;
 
-        public AuthenticationComA(bool answer, byte[] sessionId)
+        public FileDeleteComA(bool answer, byte[] sessionId)
         {
             if (sessionId == null)
                 throw new ArgumentNullException(nameof(sessionId));
             if (sessionId.Length != LengthHash)
                 throw new ArgumentOutOfRangeException($"{nameof(sessionId)} size must be {LengthHash}");
 
-            typeCom = (byte)TypeCommand.AUTHORIZATION_A;
-            this.answer = answer;            
+            typeCom = (byte)TypeCommand.FILE_ADD_A;
+            this.answer = answer;
             this.sessionId = sessionId;
         }
 
@@ -32,10 +32,14 @@ namespace CommandsKit
 
         public override bool ExecuteCommand()
         {
+            if(answer)
+            {
+                PrintMessage.PrintColorMessage("\nFile was deleted!\n", ConsoleColor.White);
+            }
             return answer;
         }
 
-        public static AuthenticationComA BytesToCom(byte[] payload)
+        public static FileDeleteComA BytesToCom(byte[] payload)
         {
             if (payload == null)
                 throw new ArgumentNullException(nameof(payload));
@@ -47,7 +51,7 @@ namespace CommandsKit
 
             bool answer = BitConverter.ToBoolean(payload, 0);
 
-            return new AuthenticationComA(answer, sessionId);
+            return new FileDeleteComA(answer, sessionId);
         }
     }
 }

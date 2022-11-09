@@ -57,7 +57,7 @@ namespace Client
             bool noErrorConnection = true;
             while (noErrorConnection)
             {
-                int comEnter = EnterData.EnterNumAction(new string[] { "Print my files", "Get file", "Add file", "Set default directory for file" });
+                int comEnter = EnterData.EnterNumAction(new string[] { "Print my files", "Get file", "Add file", "Delete file", "Set default directory for file" });
                 CommandRequest com;
 
                 switch (comEnter)
@@ -90,8 +90,19 @@ namespace Client
                         }
                     case 4:
                         {
+                            uint id = EnterData.EnterUInt32Message("Enter file id: ", "Error: Incorrect data!\n");
+                            com = new FileDeleteComR(id, pcdClient.sessionId);
+                            if (!pcdClient.ServeCommand(com))
+                            {
+                                noErrorConnection = false;
+                                PrintMessage.PrintColorMessage("\nError connection!\n", ConsoleColor.Red);
+                            }
+                            break;
+                        }
+                    case 5:
+                        {
                             PrintMessage.PrintColorMessage("\nEnter path: ", ConsoleColor.White);
-                            FileGetComA.Path = Console.ReadLine();
+                            FileGetComA.Directory = Console.ReadLine();
                             break;
                         }
                 }

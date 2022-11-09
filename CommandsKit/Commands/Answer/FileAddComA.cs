@@ -1,4 +1,5 @@
-﻿using ProtocolTransport;
+﻿using ConsoleWorker;
+using ProtocolTransport;
 
 namespace CommandsKit
 {
@@ -31,6 +32,10 @@ namespace CommandsKit
 
         public override bool ExecuteCommand()
         {
+            if (answer)
+            {
+                PrintMessage.PrintColorMessage("\nFile was added!\n", ConsoleColor.White);
+            }
             return answer;
         }
 

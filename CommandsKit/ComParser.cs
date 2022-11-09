@@ -64,6 +64,14 @@ namespace CommandsKit
                     {
                         return FileAddComA.BytesToCom(payload);
                     }
+                case TypeCommand.FILE_DELETE_R:
+                    {
+                        return FileDeleteComR.BytesToCom(payload);
+                    }
+                case TypeCommand.FILE_DELETE_A:
+                    {
+                        return FileDeleteComA.BytesToCom(payload);
+                    }
                 default:
                     {
                         return UnknowCom.BytesToCom(payload);

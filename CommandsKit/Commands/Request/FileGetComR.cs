@@ -101,8 +101,8 @@ namespace CommandsKit
         {
             if (payload == null)
                 throw new ArgumentNullException(nameof(payload));
-            if (payload.Length <= LengthHash)
-                throw new ArgumentOutOfRangeException($"{nameof(payload)} size must be more {LengthHash}");
+            if (payload.Length < 4 + LengthHash)
+                throw new ArgumentOutOfRangeException($"{nameof(payload)} size must be more {4 + LengthHash}");
 
             byte[] sessionId = new byte[LengthHash];
             byte[] fileIdBytes = new byte[payload.Length - LengthHash];
