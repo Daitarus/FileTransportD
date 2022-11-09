@@ -32,10 +32,6 @@ namespace CommandsKit
 
         public override bool ExecuteCommand()
         {
-            if(answer)
-            {
-                PrintMessage.PrintColorMessage("\nFile was deleted!\n", ConsoleColor.White);
-            }
             return answer;
         }
 

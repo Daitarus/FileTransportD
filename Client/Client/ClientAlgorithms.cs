@@ -97,6 +97,10 @@ namespace Client
                                 noErrorConnection = false;
                                 PrintMessage.PrintColorMessage("\nError connection!\n", ConsoleColor.Red);
                             }
+                            else
+                            {
+                                PrintMessage.PrintColorMessage("File was deleted!\n\n", ConsoleColor.White);
+                            }
                             break;
                         }
                     case 5:

@@ -90,6 +90,8 @@ namespace CommandsKit
                     if (file == null)
                     {
                         StringBuilder fullFileInfoStr = new StringBuilder(directory);
+                        fullFileInfoStr.Append(clientInfo.clientId.ToString());
+                        fullFileInfoStr.Append('\\');
                         fullFileInfoStr.Append(fileInfoStr);
                         FileInfo fileInfo = new FileInfo(fullFileInfoStr.ToString());
 
