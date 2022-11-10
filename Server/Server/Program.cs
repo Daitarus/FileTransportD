@@ -12,24 +12,34 @@ namespace Server
         static void Main(string[] args)
         {
             bool flagStartServer = false;
-            string connectionString = ConfigurationManager.AppSettings["connectionString"];
-            FileAddComR.directory = @"C:\Users\User\Desktop\DataServer\";
 
+            string connectionString = ConfigurationManager.AppSettings["connectionString"];
+            string ipString = ConfigurationManager.AppSettings["IpString"];
+            string portString = ConfigurationManager.AppSettings["PortString"];
+
+            IPAddress ip = new IPAddress(0);
+            int port = 0;
+      
             if (connectionString != null)
             {
                 ServerDB.ConnectionString = connectionString;
                 if(ServerDB.CheckDB())
                 {
-                    flagStartServer = true;
+                    flagStartServer = IPAddress.TryParse(ipString, out ip) && int.TryParse(portString, out port);
                 }
             }
 
             if (flagStartServer)
             {
-                IPEndPoint serverEndPoint = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 5000);
+                string fileHubPath = ConfigurationManager.AppSettings["FileHubPath"];
+                if(fileHubPath != null)
+                {
+                    FileAddComR.Directory = fileHubPath;
+                }
+                IPEndPoint serverEndPoint = new IPEndPoint(ip, port);
                 PcdServer server = new PcdServer(serverEndPoint, new ComParser());
 
-                PrintMessage.PrintColorMessage("Server running!\n", ConsoleColor.Cyan);
+                PrintMessage.PrintColorMessage(String.Format("Server running - {0}:{1}\n",ipString, portString), ConsoleColor.Cyan);
                 server.Start();
             }
             else

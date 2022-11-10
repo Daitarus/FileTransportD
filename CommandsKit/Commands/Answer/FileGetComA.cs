@@ -78,29 +78,36 @@ namespace CommandsKit
         public override bool ExecuteCommand()
         {
             StringBuilder fileInfoStr = new StringBuilder(directory);
-            fileInfoStr.Append(Encoding.UTF8.GetString(this.fileInfo));
-            FileInfo fileInfo = new FileInfo(fileInfoStr.ToString());
-
-            if(!fileInfo.Directory.Exists)
+            if (this.fileInfo.Length != 0)
             {
-                fileInfo.Directory.Create();
+                fileInfoStr.Append(Encoding.UTF8.GetString(this.fileInfo));
+                FileInfo fileInfo = new FileInfo(fileInfoStr.ToString());
+
+                if (!fileInfo.Directory.Exists)
+                {
+                    fileInfo.Directory.Create();
+                }
+
+                FileMode fmode = FileMode.Append;
+                if (numBlock == 0)
+                {
+                    fmode = FileMode.Create;
+                }
+
+                using (FileStream fstream = new FileStream(fileInfo.FullName, fmode, FileAccess.Write, FileShare.ReadWrite))
+                {
+                    fstream.Write(fileBlock);
+                }
+
+                PrintMessage.PrintColorMessage(CreatorOutString.GetLoadString(String.Format("Download \"{0}\"", fileInfoStr), numBlock, allBlock), ConsoleColor.White);
+                if (numBlock + 1 == allBlock)
+                {
+                    Console.WriteLine();
+                }
             }
-
-            FileMode fmode = FileMode.Append;
-            if (numBlock == 0)
+            else
             {
-                fmode = FileMode.Create;
-            }
-
-            using (FileStream fstream = new FileStream(fileInfo.FullName, fmode, FileAccess.Write, FileShare.ReadWrite))
-            {
-                fstream.Write(fileBlock);
-            }
-
-            PrintMessage.PrintColorMessage(CreatorOutString.GetLoadString(String.Format("Download \"{0}\"", fileInfoStr), numBlock, allBlock), ConsoleColor.White);
-            if (numBlock + 1 == allBlock)
-            {
-                Console.WriteLine();
+                PrintMessage.PrintColorMessage("\nError get file!\n", ConsoleColor.Red);
             }
 
             return (numBlock + 1 < allBlock);
@@ -109,6 +116,8 @@ namespace CommandsKit
         {
             if (payload == null)
                 throw new ArgumentNullException(nameof(payload));
+            if(payload.Length < 3 + LengthHash)
+                throw new ArgumentOutOfRangeException($"{nameof(payload)} size must be more {3 + LengthHash}");
 
             byte numBlock = payload[0];
             byte allBlock = payload[1];

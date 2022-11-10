@@ -13,6 +13,7 @@ namespace ProtocolTransport
         private IPEndPoint serverEndPoint;
         private CryptRSA rsa;
         private IParser parser;
+        private List<uint> clientsId = new List<uint>();
 
         public PcdServer(IPEndPoint serverEndPoint, IParser parser)
         {
@@ -82,6 +83,14 @@ namespace ProtocolTransport
                             comRequest.ExecuteCommand(transport, ref clientInfo);
                         }
                     }
+                }
+            }
+            catch (SocketException e)
+            {
+                //An existing connection was forcibly closed by the remote host
+                if (e.NativeErrorCode != 10054)
+                {
+                    LogException(e);
                 }
             }
             catch (Exception e)

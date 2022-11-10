@@ -9,6 +9,7 @@ namespace Client
     {
         static void Main(string[] args)
         {
+
             IPEndPoint serverEndPoint = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 5000);
             //IPEndPoint serverEndPoint = EnterData.EnterIpEndPoint();
 
@@ -24,6 +25,8 @@ namespace Client
             {
                 PrintMessage.PrintColorMessage("Error: No connection!\n\n", ConsoleColor.Red);
             }
+
+            Console.ReadKey();
         }
     }
 }
