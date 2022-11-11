@@ -47,7 +47,7 @@ namespace CommandsKit
 
             if (Enumerable.SequenceEqual(clientInfo.sessionId, sessionId))
             {
-                if (!clientInfo.authentication)
+                if (!clientInfo.Authentication)
                 {
                     RepositoryClient clientR = new RepositoryClient();
                     Client? client = clientR.SelectForName(login);

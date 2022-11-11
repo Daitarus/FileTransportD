@@ -42,14 +42,14 @@ namespace CommandsKit
 
             if (Enumerable.SequenceEqual(clientInfo.sessionId, sessionId))
             {
-                if (clientInfo.authentication)
+                if (clientInfo.Authentication)
                 {
                     RepositoryClientFile clientFileR = new RepositoryClientFile();
                     List<Client_File> clientFiles = clientFileR.SelectFileId(fileId);
                     
                     foreach (Client_File clientFile in clientFiles)
                     {
-                        if (clientInfo.clientId == clientFile.Id_Client)
+                        if (clientInfo.ClientId == clientFile.Id_Client)
                         {
                             clientFiles.Remove(clientFile);
                             clientFileR.Remove(clientFile);
@@ -78,7 +78,7 @@ namespace CommandsKit
                     }
 
                     RepositoryHistory historyR = new RepositoryHistory();
-                    History history = new History(clientInfo.endPoint, timeDelete, "File_Delete", clientInfo.clientId);
+                    History history = new History(clientInfo.endPoint, timeDelete, "File_Delete", clientInfo.ClientId);
                     historyR.Add(history);
                     historyR.SaveChange();
                 }

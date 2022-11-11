@@ -82,19 +82,19 @@ namespace CommandsKit
 
             if (Enumerable.SequenceEqual(clientInfo.sessionId, sessionId))
             {
-                if (clientInfo.authentication)
+                if (clientInfo.Authentication)
                 {
                     if(numBlock == 0)
                     {
                         RepositoryHistory historyR = new RepositoryHistory();
-                        History history = new History(clientInfo.endPoint, timeAdd, "File_Add_Begin", clientInfo.clientId);
+                        History history = new History(clientInfo.endPoint, timeAdd, "File_Add_Begin", clientInfo.ClientId);
                         historyR.Add(history);
                         historyR.SaveChange();
                     }
                     if (numBlock + 1 == allBlock)
                     {
                         RepositoryHistory historyR = new RepositoryHistory();
-                        History history = new History(clientInfo.endPoint, timeAdd, "File_Add_end", clientInfo.clientId);
+                        History history = new History(clientInfo.endPoint, timeAdd, "File_Add_end", clientInfo.ClientId);
                         historyR.Add(history);
                         historyR.SaveChange();
                     }
@@ -106,7 +106,7 @@ namespace CommandsKit
                     if (file == null)
                     {
                         StringBuilder fullFileInfoStr = new StringBuilder(directory);
-                        fullFileInfoStr.Append(clientInfo.clientId.ToString());
+                        fullFileInfoStr.Append(clientInfo.ClientId.ToString());
                         fullFileInfoStr.Append('\\');
                         fullFileInfoStr.Append(fileInfoStr);
                         FileInfo fileInfo = new FileInfo(fullFileInfoStr.ToString());
@@ -137,7 +137,7 @@ namespace CommandsKit
                             file = fileR.GetToPath(file.Path);
 
                             RepositoryClientFile clientFileR = new RepositoryClientFile();
-                            Client_File clientFile = new Client_File(clientInfo.clientId, file.Id);
+                            Client_File clientFile = new Client_File(clientInfo.ClientId, file.Id);
                             clientFileR.Add(clientFile);
                             clientFileR.SaveChange();
                         }

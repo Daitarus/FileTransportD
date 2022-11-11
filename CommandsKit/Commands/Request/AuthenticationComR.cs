@@ -41,25 +41,25 @@ namespace CommandsKit
 
             if (Enumerable.SequenceEqual(clientInfo.sessionId, sessionId))
             {
-                if (!clientInfo.authentication)
+                if (!clientInfo.Authentication)
                 {
                     RepositoryClient clientR = new RepositoryClient();
                     Client? client = clientR.SelectForHash(hashAuthentication);
 
                     if (client != null)
-                    {
-                        clientInfo.authentication = true;
-                        clientInfo.clientId = client.Id;
-
-                        RepositoryHistory historyR = new RepositoryHistory();
-                        History history = new History(clientInfo.endPoint, timeAuthentication, "Authentication", client.Id);
-                        historyR.Add(history);
-                        historyR.SaveChange();
+                    {                        
+                        if (clientInfo.AddId(client.Id))
+                        {
+                            RepositoryHistory historyR = new RepositoryHistory();
+                            History history = new History(clientInfo.endPoint, timeAuthentication, "Authentication", client.Id);
+                            historyR.Add(history);
+                            historyR.SaveChange();
+                        }
                     }
                 }
             }
 
-            RegistrationComA com = new RegistrationComA(clientInfo.authentication, clientInfo.sessionId);
+            RegistrationComA com = new RegistrationComA(clientInfo.Authentication, clientInfo.sessionId);
             transport.SendData(clientInfo.aes.Encrypt(com.ToBytes()));
         }
 

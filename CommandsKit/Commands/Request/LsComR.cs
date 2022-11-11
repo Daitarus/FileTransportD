@@ -48,10 +48,10 @@ namespace CommandsKit
 
             if (Enumerable.SequenceEqual(clientInfo.sessionId, sessionId))
             {
-                if (clientInfo.authentication)
+                if (clientInfo.Authentication)
                 {
                     RepositoryClientFile clientFileR = new RepositoryClientFile();
-                    List<uint> allFileId = clientFileR.IdFileForClient(clientInfo.clientId);
+                    List<uint> allFileId = clientFileR.IdFileForClient(clientInfo.ClientId);
 
                     if (allFileId.Count > 0)
                     {
@@ -67,7 +67,7 @@ namespace CommandsKit
                     }
 
                     RepositoryHistory historyR = new RepositoryHistory();
-                    History history = new History(clientInfo.endPoint, timeLs, "Ls", clientInfo.clientId);
+                    History history = new History(clientInfo.endPoint, timeLs, "Ls", clientInfo.ClientId);
                     historyR.Add(history);
                     historyR.SaveChange();
                 }

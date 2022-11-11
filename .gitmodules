@@ -1,3 +1,9 @@
 [submodule "Server/RepositoryDB"]
 	path = Server/RepositoryDB
 	url = https://github.com/Daitarus/RepositoryDB.git
+[submodule "CryptL"]
+	path = CryptL
+	url = https://github.com/Daitarus/CryptL.git
+[submodule "ProtocolTransport"]
+	path = ProtocolTransport
+	url = https://github.com/Daitarus/ProtocolTransport.git
