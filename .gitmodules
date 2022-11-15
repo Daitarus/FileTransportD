@@ -7,3 +7,6 @@
 [submodule "ProtocolTransport"]
 	path = ProtocolTransport
 	url = https://github.com/Daitarus/ProtocolTransport.git
+[submodule "ConsoleWorker"]
+	path = ConsoleWorker
+	url = https://github.com/Daitarus/ConsoleWorker.git
