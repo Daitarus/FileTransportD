@@ -9,9 +9,7 @@ namespace Client
     {
         static void Main(string[] args)
         {
-
-            IPEndPoint serverEndPoint = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 5000);
-            //IPEndPoint serverEndPoint = EnterData.EnterIpEndPoint();
+            IPEndPoint serverEndPoint = EnterData.EnterIpEndPoint();
 
             PcdClient pcdClient = new PcdClient(serverEndPoint, new ComParser());
 
